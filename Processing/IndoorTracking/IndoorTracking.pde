@@ -8,6 +8,7 @@ Server myServer;
 int val = 0;
 int port = 5204;
 
+
 Client pythonClient;
 
 // Serial myPort;  // Create object from Serial class
@@ -45,7 +46,7 @@ void setup()
   //myPort = new Serial(this, portName, 115200);
   size(800, 600);
 
-
+  //Vi laver en ny server
   myServer = new Server(this, port); 
 
 
