@@ -5,9 +5,8 @@ public class Pose {
   Matrix dataMatrix;
   Matrix modelMatrix;
 
-
   Vector dataVector;
-  Vector modleVector;
+  Vector modelVector;
 
   float r;
   float t;
@@ -27,6 +26,9 @@ public class Pose {
   }
 
   public void calculateT() {
+    
+    
+    
   }
 
   public void calculateR() {
@@ -49,14 +51,14 @@ public class Pose {
 
   public void calculateModelVector() {
 
-    double[][] calculationArray = new double[2][dataMatrix.getArray().length];
-    double[][] modelMatrixLinesArray = modelMatrix.getArrayCopy();
+    double[][] calculationArray = new double[2][modelMatrix.getArray().length];
+    double[][] modelMatrixArray = modelMatrix.getArrayCopy();
 
     for (int i = 0; i < modelMatrix.getArray().length; i++) {
       weight = calculateWeight(width/2, height/2, 
-        (float)modelMatrixLinesArray[0][i], (float)modelMatrixLinesArray[1][i]);
-      calculationArray[0][i] = (modelMatrixLinesArray[0][i] * weight)/weight;
-      calculationArray[1][i] = (modelMatrixLinesArray[1][i] * weight)/weight;
+        (float)modelMatrixArray[0][i], (float)modelMatrixArray[1][i]);
+      calculationArray[0][i] = (modelMatrixArray[0][i] * weight)/weight;
+      calculationArray[1][i] = (modelMatrixArray[1][i] * weight)/weight;
     }
   }
 
@@ -65,41 +67,10 @@ public class Pose {
   }
 
   public void calculateDataMatrix() {
-    double[][] calculationMatrixCorners = 
-      new double[2][dataSet.Corners.size()-1];
-    double[][] calculationMatrixLines = 
-      new double[2][dataSet.Lines.size()-1];
-    for (int i = 0; i < dataSet.Corners.size()-1; i++) {
-      calculationMatrixCorners[0][i] = dataSet.Corners.get(i).x;
-      calculationMatrixCorners[1][i] = dataSet.Corners.get(i).y;
-    }
-    for (int i = 0; i < dataSet.Lines.size()-1; i++) {
-      for (int j = 0; j < dataSet.Lines.get(i).cluster.size(); j++) {
-        calculationMatrixLines[0][j] = dataSet.Lines.get(i).cluster.get(j).x;
-        calculationMatrixLines[1][j] = dataSet.Lines.get(i).cluster.get(j).y;
-      }
-    }
-
-    dataMatrix = new Matrix(calculationMatrixLines);
+    
   }
 
   public void calculateModelMatrix() {
 
-    double[][] calculationMatrixCorners = 
-      new double[2][modelSet.Corners.size()-1];
-    double[][] calculationMatrixLines = 
-      new double[2][modelSet.Lines.size()-1];
-    for (int i = 0; i < modelSet.Corners.size()-1; i++) {
-      calculationMatrixCorners[0][i] = modelSet.Corners.get(i).x;
-      calculationMatrixCorners[1][i] = modelSet.Corners.get(i).y;
-    }
-    for (int i = 0; i < modelSet.Lines.size()-1; i++) {
-      for (int j = 0; j < modelSet.Lines.get(i).cluster.size(); j++) {
-        calculationMatrixLines[0][j] = modelSet.Lines.get(i).cluster.get(j).x;
-        calculationMatrixLines[1][j] = modelSet.Lines.get(i).cluster.get(j).y;
-      }
-    }
-
-    modelMatrix = new Matrix(calculationMatrixLines);
   }
 }
