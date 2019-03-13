@@ -1,7 +1,8 @@
 # If you get a permision denide on ttyUSB0 it's because the permisions didn't stick, so run: sudo chmod a+rw /dev/ttyUSB0 
 
 from rplidar import RPLidar
-lidar = RPLidar('/dev/ttyUSB0')
+lidar = RPLidar('/dev/ttyUSB0') # For Linux
+#lidar = RPLidar('COM8') # For Windows
 
 import socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
