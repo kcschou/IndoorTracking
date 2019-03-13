@@ -2,10 +2,8 @@ public class Pose {
   Location dataSet;
   Location modelSet;
 
-  Matrix dataMatrixCorner;
-  Matrix dataMatrixLines;
-  Matrix modelMatrixCorner;
-  Matrix modelMatrixLines;
+  Matrix dataMatrix;
+  Matrix modelMatrix;
 
 
   Vector dataVector;
@@ -36,10 +34,10 @@ public class Pose {
 
   public void calculateDataVector() {
 
-    double[][] calculationArray = new double[2][dataMatrixLines.getArray().length];
-    double[][] dataMatrixLinesArray = dataMatrixLines.getArrayCopy();
+    double[][] calculationArray = new double[2][dataMatrix.getArray().length];
+    double[][] dataMatrixLinesArray = dataMatrix.getArrayCopy();
 
-    for (int i = 0; i < dataMatrixLines.getArray().length; i++) {
+    for (int i = 0; i < dataMatrix.getArray().length; i++) {
       weight = calculateWeight(width/2, height/2, 
         (float)dataMatrixLinesArray[0][i], (float)dataMatrixLinesArray[1][i]);
       calculationArray[0][i] = (dataMatrixLinesArray[0][i] * weight)/weight;
@@ -51,10 +49,10 @@ public class Pose {
 
   public void calculateModelVector() {
 
-    double[][] calculationArray = new double[2][dataMatrixLines.getArray().length];
-    double[][] modelMatrixLinesArray = modelMatrixLines.getArrayCopy();
+    double[][] calculationArray = new double[2][dataMatrix.getArray().length];
+    double[][] modelMatrixLinesArray = modelMatrix.getArrayCopy();
 
-    for (int i = 0; i < modelMatrixLines.getArray().length; i++) {
+    for (int i = 0; i < modelMatrix.getArray().length; i++) {
       weight = calculateWeight(width/2, height/2, 
         (float)modelMatrixLinesArray[0][i], (float)modelMatrixLinesArray[1][i]);
       calculationArray[0][i] = (modelMatrixLinesArray[0][i] * weight)/weight;
@@ -82,8 +80,7 @@ public class Pose {
       }
     }
 
-    dataMatrixCorner = new Matrix(calculationMatrixCorners);
-    dataMatrixLines = new Matrix(calculationMatrixLines);
+    dataMatrix = new Matrix(calculationMatrixLines);
   }
 
   public void calculateModelMatrix() {
@@ -103,7 +100,6 @@ public class Pose {
       }
     }
 
-    modelMatrixCorner = new Matrix(calculationMatrixCorners);
-    modelMatrixLines = new Matrix(calculationMatrixLines);
+    modelMatrix = new Matrix(calculationMatrixLines);
   }
 }
