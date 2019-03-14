@@ -5,16 +5,23 @@ public class Pose {
   Matrix dataMatrix;
   Matrix modelMatrix;
 
-  Vector dataVector;
-  Vector modelVector;
+  Vector<Point> dataVector = new Vector();
+  Vector<Point> modelVector = new Vector();
 
   float r;
   float t;
   float weight;
 
+  Matrix X;
+  Matrix Y;
+  Matrix W;
 
-  Pose(Location givenModelSet) {
+  Matrix S;
+  Matrix R;
+
+  Pose(Location givenModelSet, Location givenDataSet) {
     modelSet = givenModelSet;
+    dataSet = givenDataSet;
   }
 
   public Matrix poseMatrix(Location givenDataSet) {
@@ -26,51 +33,71 @@ public class Pose {
   }
 
   public void calculateT() {
-    
-    
-    
   }
 
   public void calculateR() {
   }
 
+  public void calculateS() {
+  }
+  
+  //Formel 7 for P
+
   public void calculateDataVector() {
 
-    double[][] calculationArray = new double[2][dataMatrix.getArray().length];
-    double[][] dataMatrixLinesArray = dataMatrix.getArrayCopy();
+    double[][] dataMatrixArray = dataMatrix.getArrayCopy();
 
-    for (int i = 0; i < dataMatrix.getArray().length; i++) {
+    float totalWeight = 0;
+
+    float dataVectorX = 0;
+    float dataVectorY = 0;
+
+
+    for (int i = 0; i < dataMatrixArray[0].length; i++) {
       weight = calculateWeight(width/2, height/2, 
-        (float)dataMatrixLinesArray[0][i], (float)dataMatrixLinesArray[1][i]);
-      calculationArray[0][i] = (dataMatrixLinesArray[0][i] * weight)/weight;
-      calculationArray[1][i] = (dataMatrixLinesArray[1][i] * weight)/weight;
+        (float)dataMatrixArray[0][i], (float)dataMatrixArray[1][i]);
+      totalWeight += weight;
+      dataVectorX += (dataMatrixArray[0][i] * weight);
+      dataVectorY += (dataMatrixArray[1][i] * weight);
     }
+    dataVectorX = dataVectorX/totalWeight;
+    dataVectorY = dataVectorY/totalWeight;
 
-    dataVector = new Vector(Arrays.asList(calculationArray));
+
+    dataVector.add(new Point(dataVectorX, dataVectorY));
   }
+  
+  //Formel 7 for Q
 
   public void calculateModelVector() {
 
-    double[][] calculationArray = new double[2][modelMatrix.getArray().length];
     double[][] modelMatrixArray = modelMatrix.getArrayCopy();
 
-    for (int i = 0; i < modelMatrix.getArray().length; i++) {
+    float totalWeight = 0;
+
+    float modelVectorX = 0;
+    float modelVectorY = 0;
+  
+    for (int i = 0; i < modelMatrixArray[0].length; i++) {
       weight = calculateWeight(width/2, height/2, 
         (float)modelMatrixArray[0][i], (float)modelMatrixArray[1][i]);
-      calculationArray[0][i] = (modelMatrixArray[0][i] * weight)/weight;
-      calculationArray[1][i] = (modelMatrixArray[1][i] * weight)/weight;
+      totalWeight += weight;
+      modelVectorX += (modelMatrixArray[0][i] * weight);
+      modelVectorY += (modelMatrixArray[1][i] * weight);
     }
-  }
-
-  public float calculateWeight(float firstX, float firstY, float secondX, float secondY ) {
-    return dist(firstX, firstY, secondX, secondY);
-  }
-
-  public void calculateDataMatrix() {
+    modelVectorX = modelVectorX/totalWeight;
+    modelVectorY = modelVectorY/totalWeight;
     
+    modelVector.add(new Point(modelVectorX, modelVectorY));
   }
+}
 
-  public void calculateModelMatrix() {
+public float calculateWeight(float firstX, float firstY, float secondX, float secondY ) {
+  return dist(firstX, firstY, secondX, secondY);
+}
 
-  }
+public void calculateDataMatrix() {
+}
+
+public void calculateModelMatrix() {
 }

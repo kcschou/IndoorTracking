@@ -25,6 +25,14 @@ public class Point implements Comparable {
     this.y = (cos(radians(givenAngle)) * (givenDistance/scale))+(height/2);
     this.x = (sin(radians(givenAngle)) * (givenDistance/scale))+(width/2);
   }
+  
+  //Indtil jeg finder en mere sexet måde, vælger jeg bare at kunne give muligheden for at lave et Point med et givent (x,y), da det gør vektor beregningerne nemmere
+  Point(float x, float y) {
+   
+    this.x = x;
+    this.y = y;
+    
+  }
 
   Point(float givenDistance, float givenAngle, int givenScale, boolean point) {
     

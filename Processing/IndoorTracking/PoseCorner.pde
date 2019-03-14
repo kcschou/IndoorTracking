@@ -1,7 +1,7 @@
 public class PoseCorner extends Pose {
 
-  PoseCorner(Location givenModelSet) {
-    super(givenModelSet);
+  PoseCorner(Location givenModelSet, Location givenDataSet) {
+    super(givenModelSet, givenDataSet);
   }
 
   public void calculateModelMatrix() {
