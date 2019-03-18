@@ -76,11 +76,11 @@ public class TestingEnvironment {
     
     pCorner.calculateS();
     
-    for (int i = 0; i < pCorner.R.getArray().length; i++) {
-      for (int j = 0; j < pCorner.R.getArray()[i].length; j++) {
-        println("DM " + i + " " + j+ " : " +pCorner.R.get(i, j));
-      }
-    }
+    //for (int i = 0; i < pCorner.R.getArray().length; i++) {
+    //  for (int j = 0; j < pCorner.R.getArray()[i].length; j++) {
+    //    println("DM " + i + " " + j+ " : " +pCorner.R.get(i, j));
+    //  }
+    //}
 
     //println(pCorner.modelVector.get(0).y);
     //println(pLine.modelVector.get(0).x);

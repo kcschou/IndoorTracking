@@ -65,6 +65,13 @@ public class Pose {
 
   //Formel 6 - Jeg skal lige have fundet ud af hvordan man rigtigt blander matricer og vektorer i en beregning
   public void calculateT() {
+    
+    double[][] dataV = new double[1][2];
+    dataV[0][0] = dataVector.get(0).x;
+    dataV[0][1] = dataVector.get(0).y;
+    Matrix dv = new Matrix(dataV);
+    Vector t = modelVector - R.times(dv);
+    
   }
 
   //Formel 9
@@ -109,9 +116,8 @@ public class Pose {
     W = new Matrix(WArray);
 
 
-    //Vi skal bruge diag(W), skal lige se om der er en sexet metode som allerede gør det, ellers gør jeg det bare selv. Indtil da bliver jeg lige nødt til at sætte W til noget som gør at vi kan beregne og teste
-    //med det... Skal nok fixes
-    W = X;
+    //Vi skal bruge diag(W), jeg tror dette er rigtigt, W kan i hvertfald bruges efter den nedenstående beregning
+    W = W.svd().getS();
 
     //Nu når vi har alle værdier kan vi beregne S som de gør mellem formel 7 og 8
     S = (X.times(W).times(Y)).transpose();
