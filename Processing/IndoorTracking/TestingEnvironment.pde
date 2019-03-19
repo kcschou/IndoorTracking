@@ -25,10 +25,13 @@ public class TestingEnvironment {
     ArrayList<Point> corners = new ArrayList<Point>();
     corners.add(first);
     corners.add(second);
+    corners.add(seventh);
+   // corners.add(sixth);
     ArrayList<Point> corners2 = new ArrayList<Point>();
     corners2.add(eigth);
     corners2.add(ninth);
     corners2.add(tenth);
+    corners2.add(third);
 
     //Derefter laver jeg sørme også nogle punkter til linjer jeg kan teste med
     ArrayList<Point> pointLine1 = new ArrayList<Point>();
@@ -76,12 +79,17 @@ public class TestingEnvironment {
     
     pCorner.calculateS();
     
-    //for (int i = 0; i < pCorner.R.getArray().length; i++) {
-    //  for (int j = 0; j < pCorner.R.getArray()[i].length; j++) {
-    //    println("DM " + i + " " + j+ " : " +pCorner.R.get(i, j));
-    //  }
-    //}
-
+    
+    
+    Matrix test = pCorner.R.uminus().transpose().times(pCorner.t);
+    
+    for (int i = 0; i < test.getArray().length; i++) {
+      for (int j = 0; j < test.getArray()[i].length; j++) {
+        println("t " + i + " " + j+ " : " +test.get(i, j));
+      }
+      println();
+    }
+    
     //println(pCorner.modelVector.get(0).y);
     //println(pLine.modelVector.get(0).x);
   }

@@ -11,10 +11,10 @@ public class PoseCorner extends Pose {
   public void calculateModelMatrix() {
 
     double[][] calculationMatrixCorners = 
-      new double[2][modelSet.Corners.size()];
+      new double[modelSet.Corners.size()][2];
     for (int i = 0; i < modelSet.Corners.size(); i++) {
-      calculationMatrixCorners[0][i] = modelSet.Corners.get(i).x;
-      calculationMatrixCorners[1][i] = modelSet.Corners.get(i).y;
+      calculationMatrixCorners[i][0] = modelSet.Corners.get(i).x;
+      calculationMatrixCorners[i][1] = modelSet.Corners.get(i).y;
       super.modelPoints.add(modelSet.Corners.get(i));
     }
     super.modelMatrix = new Matrix(calculationMatrixCorners);
@@ -22,11 +22,11 @@ public class PoseCorner extends Pose {
 
   public void calculateDataMatrix() {
     double[][] calculationMatrixCorners = 
-      new double[2][dataSet.Corners.size()];
+      new double[dataSet.Corners.size()][2];
 
     for (int i = 0; i < dataSet.Corners.size(); i++) {
-      calculationMatrixCorners[0][i] = dataSet.Corners.get(i).x;
-      calculationMatrixCorners[1][i] = dataSet.Corners.get(i).y;
+      calculationMatrixCorners[i][0] = dataSet.Corners.get(i).x;
+      calculationMatrixCorners[i][1] = dataSet.Corners.get(i).y;
       super.dataPoints.add(dataSet.Corners.get(i));
     }
     super.dataMatrix = new Matrix(calculationMatrixCorners);
