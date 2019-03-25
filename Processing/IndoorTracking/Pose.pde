@@ -18,6 +18,8 @@ public class Pose {
   Matrix dataMatrix;
   Matrix modelMatrix;
 
+  Matrix t;
+
   //Vi har brug for en liste af dataPoints (de kommer fra vores dataSet), en liste af modelPoints (fra vores fulde model set) og så det filtrede modelSet med de relevante point (det er i dobbelt array
   //format da vi blot skal bruge det til at beregne modelVector og senere hen Y
   ArrayList<Point> dataPoints = new ArrayList<Point>();
@@ -65,13 +67,18 @@ public class Pose {
 
   //Formel 6 - Jeg skal lige have fundet ud af hvordan man rigtigt blander matricer og vektorer i en beregning
   public void calculateT() {
-    
-    double[][] dataV = new double[1][2];
+
+    double[][] dataV = new double[2][1];
     dataV[0][0] = dataVector.get(0).x;
-    dataV[0][1] = dataVector.get(0).y;
+    dataV[1][0] = dataVector.get(0).y;
+
+    double[][] modelV = new double[2][1];
+    modelV[0][0] = modelVector.get(0).x;
+    modelV[1][0] = modelVector.get(0).y;
+
     Matrix dv = new Matrix(dataV);
-    // Vector t = modelVector - R.times(dv);
-    
+    Matrix mv = new Matrix(modelV);
+    t = mv.minus(R.times(dv));
   }
 
   //Formel 9
@@ -84,8 +91,11 @@ public class Pose {
     U = S.svd().getU();
     V = S.svd().getV();
 
+
     //Derefter har vi alle værdier som skal bruges for at beregne R
-    R = (U.times(V)).transpose();
+    R = U.transpose().times(V);
+
+    calculateT();
   }
 
   //Formel 8
@@ -94,33 +104,53 @@ public class Pose {
     //Vi laver et dobbelt array til både X, Y og W, fra formel 8, som senere bliver lavet om til Matricer. Grunden til at jeg gør det på den måde er, at det er nemmere at fylde ting i et
     //dobbelt array og senere lave det om til en matrice end direkte lave det til en matrice med det samme.
     //Hvis alt er gjort ordentligt så burde dataPoint.size() = weight.size() og teknisk set også = relevantModelPoints[1].length (jeg hader bare at bruge den)
-    double[][] XArray = new double[2][dataPoints.size()];
-    double[][] YArray = new double[2][dataPoints.size()];
-    double[][] WArray = new double[1][weights.size()];
+    double[][] XArray = new double[dataPoints.size()][2];
+    double[][] YArray = new double[dataPoints.size()][2];
+    double[][] WArray = new double[weights.size()][weights.size()];
 
     //Vi skal beregner både X, Y og W, som de gør mellem formel 7 og 8
     for (int i = 0; i < dataPoints.size(); i++) {
 
-      XArray[0][i] = dataPoints.get(i).x - dataVector.get(0).x;
-      XArray[1][i] = dataPoints.get(i).y - dataVector.get(0).y;
+      XArray[i][0] = dataPoints.get(i).x - dataVector.get(0).x;
+      XArray[i][1] = dataPoints.get(i).y - dataVector.get(0).y;
 
-      YArray[0][i] = relevantModelPoints[0][i] - modelVector.get(0).x;
-      YArray[1][i] = relevantModelPoints[1][i] - modelVector.get(0).y;
-
-      WArray[0][i] = weights.get(i);
+      YArray[i][0] = relevantModelPoints[i][0] - modelVector.get(0).x;
+      YArray[i][1] = relevantModelPoints[i][1] - modelVector.get(0).y;
     }
 
     //Laver vores arrays om til matricer
     X = new Matrix(XArray);
     Y = new Matrix(YArray);
+
+    //Vi skal bruge diag(W), jeg aner ikke om den nedenstående beregning funker, da jeg ikke ved om W skal have vægtene som rækker eller columns. 
+    //Som rækker virker det ikke, som columns gør det.
+    //W = W.svd().getS();
+
+    for (int i = 0; i<weights.size(); i++) {
+      for (int j = 0; j < weights.size(); j++) {
+        if (i == j) {
+          WArray[i][j] = weights.get(i);
+        } else {
+          WArray[i][j] = 0;
+        }
+      }
+    }
+
     W = new Matrix(WArray);
 
+    //for (int i = 0; i < W.getArray().length; i++) {
+    //  for (int j = 0; j < W.getArray()[i].length; j++) {
+    //    println("DM " + i + " " + j+ " : " +W.get(i, j));
+    //  }
+    //  println();
+    //}
 
-    //Vi skal bruge diag(W), jeg tror dette er rigtigt, W kan i hvertfald bruges efter den nedenstående beregning
-    W = W.svd().getS();
+
+
+    //W = W.svd().getS();
 
     //Nu når vi har alle værdier kan vi beregne S som de gør mellem formel 7 og 8
-    S = (X.times(W).times(Y)).transpose();
+    S = Y.transpose().times(W.times(X));
 
     //Hvorfor ikke beregne R med det samme efter
     calculateR();
@@ -146,8 +176,8 @@ public class Pose {
       //Inkrementere den totale vægt med den næste vægt i rækken
       totalWeight+= weights.get(i);
       //Inkrementere dataVector X og Y (det svare til det de gør i numeratoren i formel 7)
-      dataVectorX += (dataMatrixArray[0][i] * weights.get(i));
-      dataVectorY += (dataMatrixArray[1][i] * weights.get(i));
+      dataVectorX += (dataMatrixArray[i][0] * weights.get(i));
+      dataVectorY += (dataMatrixArray[i][1] * weights.get(i));
     }
 
     //for (int i = 0; i < dataMatrixArray[0].length; i++) {
@@ -181,8 +211,8 @@ public class Pose {
     for (int i = 0; i < dataPoints.size(); i++) {
 
       totalWeight+= weights.get(i);
-      modelVectorX += (modelMatrixArray[0][i] * weights.get(i));
-      modelVectorY += (modelMatrixArray[1][i] * weights.get(i));
+      modelVectorX += (modelMatrixArray[i][0] * weights.get(i));
+      modelVectorY += (modelMatrixArray[i][1] * weights.get(i));
     }
 
     //for (int i = 0; i < modelMatrixArray[0].length; i++) {
@@ -217,7 +247,7 @@ public class Pose {
   public void ICP() {
 
     //Vi skal have ligeså mange relevante model points som datapoints (alle data points skal mappes til ét model point kun)
-    relevantModelPoints = new double[2][dataPoints.size()];
+    relevantModelPoints = new double[dataPoints.size()][2];
     //Derfor er maks antal feature point lig antallet af datapoint
     totalFeaturePoints = dataPoints.size();
     //Vi går i gennem alle datapoints, da alle som sagt skal mappes
@@ -245,8 +275,8 @@ public class Pose {
       //Gemmer vægten (skal bruges i formel 7 og til beregning af W)
       weights.add(minDistance);
       //Og gemmer det punkt som matchede i vores relevantModelPoints array
-      relevantModelPoints[0][i] = modelPoints.get(minDistanceIndex).x;
-      relevantModelPoints[1][i] = modelPoints.get(minDistanceIndex).y;
+      relevantModelPoints[i][0] = modelPoints.get(minDistanceIndex).x;
+      relevantModelPoints[i][1] = modelPoints.get(minDistanceIndex).y;
     }
     //Efter alle feature points er fundet, så kan jeg beregne confidence som de gør i formel 10
     confidence = totalFeaturePoints/dataPoints.size();

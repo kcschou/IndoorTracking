@@ -14,11 +14,11 @@ public class PoseLine extends Pose {
     }
 
     double[][] calculationMatrixLines = 
-      new double[2][totalsize];
+      new double[totalsize][2];
     for (int i = 0; i < modelSet.Lines.size(); i++) {
       for (int j = 0; j < modelSet.Lines.get(i).cluster.size(); j++) {
-        calculationMatrixLines[0][j] = modelSet.Lines.get(i).cluster.get(j).x;
-        calculationMatrixLines[1][j] = modelSet.Lines.get(i).cluster.get(j).y;
+        calculationMatrixLines[j][0] = modelSet.Lines.get(i).cluster.get(j).x;
+        calculationMatrixLines[j][1] = modelSet.Lines.get(i).cluster.get(j).y;
       }
     }
 
@@ -33,11 +33,11 @@ public class PoseLine extends Pose {
       totalsize=+ dataSet.Lines.get(i).cluster.size();
     }
 
-    double[][] calculationMatrixLines = new double[2][totalsize];
+    double[][] calculationMatrixLines = new double[totalsize][2];
     for (int i = 0; i < dataSet.Lines.size(); i++) {
       for (int j = 0; j < dataSet.Lines.get(i).cluster.size(); j++) {
-        calculationMatrixLines[0][j] = dataSet.Lines.get(i).cluster.get(j).x;
-        calculationMatrixLines[1][j] = dataSet.Lines.get(i).cluster.get(j).y;
+        calculationMatrixLines[j][0] = dataSet.Lines.get(i).cluster.get(j).x;
+        calculationMatrixLines[j][1] = dataSet.Lines.get(i).cluster.get(j).y;
       }
     }
 
