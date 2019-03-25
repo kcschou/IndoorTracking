@@ -4,12 +4,13 @@ import java.util.*;
 import Jama.*;
 
 // setup of server so python can send it data
-Server myServer;
+//Server myServer;
 int val = 0;
 int port = 5204;
 
+Client myClient;
 
-Client pythonClient;
+//Client pythonClient;
 
 // Serial myPort;  // Create object from Serial class
 // String val;     // Data received from the serial port
@@ -17,7 +18,7 @@ float x;
 float y;
 float distance;
 float angle;
-int scale = 10;
+int scale = 15;
 //InsertionSort insertionSort = new InsertionSort();
 
 //ArrayList<Float[]> pointArray = new ArrayList<Float[]>();
@@ -36,6 +37,8 @@ GUI gui;
 
 int count = 0;
 
+boolean connected = false;
+
 void setup()
 {
   // I know that the first port in the serial list on my mac
@@ -44,14 +47,14 @@ void setup()
   // Open whatever port is the one you're using.
   //String portName = Serial.list()[0]; //change the 0 to a 1 or 2 etc. to match your port
   //myPort = new Serial(this, portName, 115200);
-  size(800, 600);
+  size(1200, 800);
 
   //Vi laver en ny server
-  myServer = new Server(this, port); 
+  //myServer = new Server(this, port); 
 
 
   gui = new GUI();
-  
+
   //Tænkte at det ville være bedre at lave tests i en seperat klasse fremfor i main (Desværre ikke Unit-tests, så fancy er jeg ikke)
   TestingEnvironment t = new TestingEnvironment();
 
@@ -94,13 +97,22 @@ void setup()
   //  println("Ikke sortede Points: " + unsortedPoints.get(i).angle + " Sorterede Points: " + points.get(i).angle);
 
   //}
+  //pythonClient = myServer.available();
+
+  //myClient = new Client(this, "localhost", 10002);
 }
 
 void draw()
 {
   // pythonClient is defiend here because it needs a client to be conected when it's looking for an available client, so it dosen't work when done in setup
-  pythonClient = myServer.available();
+  if (!connected) {
+    //pythonClient = myServer.available();
 
+    myClient = new Client(this, "localhost", 10002);
+    if (myClient.active()) {
+      connected = true;
+    }
+  }
 
   scale(1, -1);
   translate(0, -height);
@@ -113,8 +125,8 @@ void draw()
   //  if (val != null) {
   //    String[] valueRead = split(val, ','); 
 
-  if (pythonClient !=null) {
-    String whatClientSaid = pythonClient.readString();
+  if (myClient !=null) {//if (pythonClient !=null) {
+    String whatClientSaid = myClient.readString();//String whatClientSaid = pythonClient.readString();
     if (whatClientSaid != null) {
       String[] valueRead = split(whatClientSaid, ',');
 
@@ -157,29 +169,30 @@ void draw()
           //Collections.sort(pointArray);
           Collections.sort(points);
           filteredPoints = new ArrayList<Point>();
-          if (filteredPoints.size()==0){
-          filteredPoints.add(points.get(0));
+          if (filteredPoints.size()==0) {
+            filteredPoints.add(points.get(0));
           }
           for (int i = 1; i < points.size()-1; i++) {
             if (abs(points.get(i).angle-filteredPoints.get(filteredPoints.size()-1).angle)>minimumAngleDifference) {
               filteredPoints.add(points.get(i));
             }
           }
-          
+
           clusterHandler.updateList(filteredPoints);
-          
+
           println("UnfilteredPoints size: " + points.size() + " FilteredPoints size: " + filteredPoints.size() + " Draw Point Size (Lines): " + clusterHandler.lines.size()
-          + " Draw Point Size (Corners): " + clusterHandler.corners.size());
-          
-          if(clusterHandler.corners.size() > 0) {
+            + " Draw Point Size (Corners): " + clusterHandler.corners.size());
+
+          if (clusterHandler.corners.size() > 0) {
             println("Corner x: " + clusterHandler.corners.get(0).x + " Corner y: " + clusterHandler.corners.get(0).y);
           }
-            
-          
-          
+
+
+
           //er kommer igennem clusterHandler
           //println("er kommer igennem clusterHandler");
           gui.update(clusterHandler.lines, clusterHandler.corners);
+          update();
         }
 
         //for (int i = 0; i < points.size(); i++){
@@ -195,7 +208,17 @@ void draw()
       //println("val: "+ val);
 
       //
+    } else {
+      update();
     }
+  } else {
+    update();
   }
   count++;
+}
+
+public void update() {
+  if (myClient.active()) {
+    myClient.write(1);
+  }
 }
