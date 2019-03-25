@@ -3,28 +3,36 @@
 from rplidar import RPLidar
 lidar = RPLidar('/dev/ttyUSB0') # For Linux
 #lidar = RPLidar('COM8') # For Windows
-
-import socket
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect(('localhost', 5204))
-
+import sys
 import time
 
 output = str
-
 newScan = 0
 
-for i in lidar.iter_scans(max_buf_meas=1000):
-        # output = ""
-        for j in range(len(i)):
-            if i.__getitem__(j).__getitem__(2) != 0:
-                output = str(i.__getitem__(j).__getitem__(2)) + "," + str(i.__getitem__(j).__getitem__(1)) + "," + str(newScan)
-                newScan = 0
-                if j % 20 == 0:
-                    newScan = 1
-                client_socket.send(str.encode(output))
-                time.sleep(0.2)
-        newScan = 1
+import socket
+HOST = 'localhost'
+PORT = 10002
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST, PORT))
+        s.listen()
+        conn, addr = s.accept()
+        with conn:
+                data = int.from_bytes(conn.recv(1024), byteorder=sys.byteorder)
+                print("Data:",data)
+                while data == 1:
+                        print("entered the while loop")
+                        for i in lidar.iter_scans(max_buf_meas=1000):
+                                for j in range(len(i)):
+                                        if i.__getitem__(j).__getitem__(2) != 0:
+                                                output = str(i.__getitem__(j).__getitem__(2)) + "," + str(i.__getitem__(j).__getitem__(1)) + "," + str(newScan)
+                                                newScan = 0
+                                                if j % 20 == 0:
+                                                        newScan = 1
+                                                conn.send(str.encode(output))
+                                                print("sent:"+output)
+                                                time.sleep(0.2)
+                                newScan = 1
 
 # snippet from https://rplidar.readthedocs.io/en/latest/
         # Yields:  scan : list
