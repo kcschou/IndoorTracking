@@ -70,7 +70,7 @@ public class Pose {
     dataV[0][0] = dataVector.get(0).x;
     dataV[0][1] = dataVector.get(0).y;
     Matrix dv = new Matrix(dataV);
-    Vector t = modelVector - R.times(dv);
+    // Vector t = modelVector - R.times(dv);
     
   }
 
