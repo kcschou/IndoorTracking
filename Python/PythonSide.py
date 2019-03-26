@@ -22,21 +22,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 print("Data:",data)
                 while data == 1:
                         print("entered the while loop")
-                        for i in lidar.iter_scans(max_buf_meas=1000):
-                                for j in range(len(i)):
-                                        if i.__getitem__(j).__getitem__(2) != 0:
-                                                output = str(i.__getitem__(j).__getitem__(2)) + "," + str(i.__getitem__(j).__getitem__(1)) + "," + str(newScan)
-                                                newScan = 0
-                                                if j % 20 == 0:
-                                                        newScan = 1
-                                                conn.send(str.encode(output))
-                                                print("sent:"+output)
-                                                time.sleep(0.2)
-                                newScan = 1
-
-# snippet from https://rplidar.readthedocs.io/en/latest/
-        # Yields:  scan : list
-        # List of the measurments. Each measurment is tuple with following format: (quality, angle, distance). For values description please refer to iter_measurments method’s documentation.
+                        for i in lidar.iter_measurments(max_buf_meas=1000):
+                                if i.__getitem__(3) != 0:
+                                        output = str(i.__getitem__(3)) + "," + str(i.__getitem__(2)) + "," + str(i.__getitem__(0))
+                                        conn.send(str.encode(output))
+                                        print("sent:"+output)
+                                        time.sleep(0.2)
 
 lidar.stop()
 lidar.stop_motor()

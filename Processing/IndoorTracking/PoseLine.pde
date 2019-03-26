@@ -2,6 +2,12 @@ public class PoseLine extends Pose {
 
   PoseLine(Location givenModelSet, Location givenDataSet) {
     super(givenModelSet, givenDataSet);
+    calculateModelMatrix();
+    calculateDataMatrix();
+    ICP();
+    calculateModelVector();
+    calculateDataVector();
+    calculateS();
   }
 
 
@@ -21,7 +27,7 @@ public class PoseLine extends Pose {
         calculationMatrixLines[j][1] = modelSet.Lines.get(i).cluster.get(j).y;
       }
     }
-
+    println(totalsize);
     super.modelMatrix = new Matrix(calculationMatrixLines);
   }
 

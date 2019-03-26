@@ -31,8 +31,8 @@ public class Corner extends Point {
       //this.x = (sin(radians(givenAngle)) * (givenDistance/scale))+(width/2);   
   }
   
-  Corner(float givenDistance, float givenAngle, int scale, boolean point) {
-    super(givenDistance,givenAngle,scale,point);
-  }
+  //Corner(float givenDistance, float givenAngle, int scale, boolean point) {
+  //  super(givenDistance,givenAngle,scale,point);
+  //}
    
 }

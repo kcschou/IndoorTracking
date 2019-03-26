@@ -279,6 +279,10 @@ public class Pose {
       relevantModelPoints[i][1] = modelPoints.get(minDistanceIndex).y;
     }
     //Efter alle feature points er fundet, så kan jeg beregne confidence som de gør i formel 10
+   if(dataPoints.size() != 0){
     confidence = totalFeaturePoints/dataPoints.size();
+  } else {
+  println("Pose.pde dataPoints.size() == 0");
+  }
   }
 }
