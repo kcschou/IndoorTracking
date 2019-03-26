@@ -8,7 +8,7 @@ public class GUI {
   
   
   
-  void update(ArrayList<Cluster> lines, ArrayList<Corner> corners){
+  void update(ArrayList<Cluster> lines, ArrayList<Point> corners){
     background(255);
     stroke(255, 0, 0);
     strokeWeight(5);

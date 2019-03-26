@@ -1,8 +1,8 @@
 public class Location {
-  ArrayList<Line> Lines = new ArrayList<Line>();
+  ArrayList<Cluster> Lines = new ArrayList<Cluster>();
   ArrayList<Point> Corners = new ArrayList<Point>();
   
-  Location (ArrayList<Line> givenLines, ArrayList<Point> givenCorners) {
+  Location (ArrayList<Cluster> givenLines, ArrayList<Point> givenCorners) {
     
     Lines = givenLines;
     Corners = givenCorners;

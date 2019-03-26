@@ -2,6 +2,12 @@ public class PoseCorner extends Pose {
 
   PoseCorner(Location givenModelSet, Location givenDataSet) {
     super(givenModelSet, givenDataSet);
+    calculateModelMatrix();
+    calculateDataMatrix();
+    ICP();
+    calculateModelVector();
+    calculateDataVector();
+    calculateS();
   }
   
   //Vi bliver nødt til at have disse to funktioner herinde, da der er en forskel på om vi skal kigge på hjørner eller linjer - Essentielt så er PoseCorner og PoseLine ens

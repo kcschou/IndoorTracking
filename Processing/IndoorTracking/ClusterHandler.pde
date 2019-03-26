@@ -5,7 +5,7 @@ public class ClusterHandler {
   public ArrayList<Cluster> clusters = new ArrayList<Cluster>(); 
 
   //kan ændres til Corner-liste og Line-liste
-  public ArrayList<Corner> corners = new ArrayList<Corner>(); 
+  public ArrayList<Point> corners = new ArrayList<Point>(); 
   public ArrayList<Cluster> lines = new ArrayList<Cluster>(); 
 
   float maxDistance = 30/scale;

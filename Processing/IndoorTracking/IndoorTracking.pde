@@ -3,6 +3,11 @@ import processing.net.*;
 import java.util.*;
 import Jama.*;
 
+boolean calibrate = true;
+
+Location locationModel;
+Location locationData;
+
 int val = 0;
 int port = 5204;
 
@@ -30,6 +35,8 @@ int count = 0;
 
 boolean connected = false;
 
+PrintWriter printWriter;
+
 void setup()
 {
   size(1200, 800);
@@ -38,6 +45,11 @@ void setup()
 
   //Tænkte at det ville være bedre at lave tests i en seperat klasse fremfor i main (Desværre ikke Unit-tests, så fancy er jeg ikke)
   //TestingEnvironment t = new TestingEnvironment();
+
+  printWriter = createWriter(dataPath("LocationModel.txt"));
+  printWriter.println("test");
+  printWriter.flush();
+  printWriter.close();
 }
 
 void draw()
@@ -66,8 +78,11 @@ void draw()
         Point everyPoint = new Point(distance, angle, scale);
 
         points.add(everyPoint);
+        
+        //println("NewScan: " + valueRead[2]);
 
-        if (valueRead.length > 2 && valueRead[2].charAt(0) == '1') {
+        // if newScan == '1'
+        if (valueRead.length > 2 && valueRead[2].equals("True")) {
           Collections.sort(points);
           filteredPoints = new ArrayList<Point>();
           if (filteredPoints.size()==0) {
@@ -90,6 +105,16 @@ void draw()
           //er kommer igennem clusterHandler
           //println("er kommer igennem clusterHandler");
           gui.update(clusterHandler.lines, clusterHandler.corners);
+          if (calibrate) {
+            locationModel = new Location(clusterHandler.lines, clusterHandler.corners);
+            calibrate = false;
+          } else {
+            locationData = new Location(clusterHandler.lines, clusterHandler.corners);
+          }
+          if(locationData != null) {
+          //PoseCorner pCorner = new PoseCorner(locationModel, locationData);
+          PoseLine pLine = new PoseLine(locationModel, locationData);
+          }
           update();
         }
       }
