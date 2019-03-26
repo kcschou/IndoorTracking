@@ -68,6 +68,8 @@ public class Pose {
   //Formel 6 - Jeg skal lige have fundet ud af hvordan man rigtigt blander matricer og vektorer i en beregning
   public void calculateT() {
 
+    println("Calculate T begin");
+
     double[][] dataV = new double[2][1];
     dataV[0][0] = dataVector.get(0).x;
     dataV[1][0] = dataVector.get(0).y;
@@ -79,22 +81,51 @@ public class Pose {
     Matrix dv = new Matrix(dataV);
     Matrix mv = new Matrix(modelV);
     t = mv.minus(R.times(dv));
+
+    for (int i = 0; i < t.getArray().length; i++) {
+      for (int j = 0; j < t.getArray()[i].length; j++) {
+        println("transform " + i + " " + j+ " : " +t.get(i, j));
+      }
+      println();
+    }
   }
 
   //Formel 9
   public void calculateR() {
-
+    println("CalculateR Begin");
     //Vi skal først beregne U og V ud fra S
     Matrix U;
     Matrix V;
 
     U = S.svd().getU();
+
+    for (int i = 0; i < U.getArray().length; i++) {
+      for (int j = 0; j < U.getArray()[i].length; j++) {
+        println("U " + i + " " + j+ " : " +U.get(i, j));
+      }
+      println();
+    }
+
     V = S.svd().getV();
+
+    for (int i = 0; i < V.getArray().length; i++) {
+      for (int j = 0; j < V.getArray()[i].length; j++) {
+        println("V " + i + " " + j+ " : " +V.get(i, j));
+      }
+      println();
+    }
 
 
     //Derefter har vi alle værdier som skal bruges for at beregne R
     R = U.transpose().times(V);
 
+    for (int i = 0; i < R.getArray().length; i++) {
+      for (int j = 0; j < R.getArray()[i].length; j++) {
+        println("R " + i + " " + j+ " : " +R.get(i, j));
+      }
+      println();
+    }
+    println("Before calculate T");     
     calculateT();
   }
 
@@ -113,12 +144,13 @@ public class Pose {
 
       XArray[i][0] = dataPoints.get(i).x - dataVector.get(0).x;
       XArray[i][1] = dataPoints.get(i).y - dataVector.get(0).y;
-
+      println("X-array : " + dataPoints.get(i).x + " " + dataVector.get(0).x);
       YArray[i][0] = relevantModelPoints[i][0] - modelVector.get(0).x;
       YArray[i][1] = relevantModelPoints[i][1] - modelVector.get(0).y;
     }
 
     //Laver vores arrays om til matricer
+    println("Weights size: " + weights.size() + " dataPoints size :" + dataPoints.size());
     X = new Matrix(XArray);
     Y = new Matrix(YArray);
 
@@ -138,19 +170,18 @@ public class Pose {
 
     W = new Matrix(WArray);
 
-    //for (int i = 0; i < W.getArray().length; i++) {
-    //  for (int j = 0; j < W.getArray()[i].length; j++) {
-    //    println("DM " + i + " " + j+ " : " +W.get(i, j));
-    //  }
-    //  println();
-    //}
-
-
-
     //W = W.svd().getS();
 
     //Nu når vi har alle værdier kan vi beregne S som de gør mellem formel 7 og 8
     S = Y.transpose().times(W.times(X));
+
+
+    //for (int i = 0; i < X.getArray().length; i++) {
+    //for (int j = 0; j < X.getArray()[i].length; j++) {
+    //println("X " + i + " " + j+ " : " +X.get(i, j));
+    //}
+    //println();
+    //}
 
     //Hvorfor ikke beregne R med det samme efter
     calculateR();
@@ -172,26 +203,20 @@ public class Pose {
 
     //Går gennem alle vores points
     for (int i = 0; i < dataPoints.size(); i++) {
-
+      println("matrixX: "+dataMatrixArray[i][0] + "matrixY: "+dataMatrixArray[i][1]);
       //Inkrementere den totale vægt med den næste vægt i rækken
-      totalWeight+= weights.get(i);
+      float dMAx = (float)dataMatrixArray[i][0];
+      float dMAy = (float)dataMatrixArray[i][1];
+      totalWeight = totalWeight + weights.get(i);
       //Inkrementere dataVector X og Y (det svare til det de gør i numeratoren i formel 7)
-      dataVectorX += (dataMatrixArray[i][0] * weights.get(i));
-      dataVectorY += (dataMatrixArray[i][1] * weights.get(i));
+      dataVectorX = dataVectorX + (dMAx * weights.get(i));
+      dataVectorY = dataVectorY + (dMAy * weights.get(i));
     }
 
-    //for (int i = 0; i < dataMatrixArray[0].length; i++) {
-    //  weight = calculateWeight(width/2, height/2, 
-    //    (float)dataMatrixArray[0][i], (float)dataMatrixArray[1][i]);
-    //  totalWeight += weight;
-    //  dataVectorX += (dataMatrixArray[0][i] * weight);
-    //  dataVectorY += (dataMatrixArray[1][i] * weight);
-    //}
-
     //Får lige demoninatoren med i formlen, det er dette vi bruger den totale vægt til
-    dataVectorX = dataVectorX/totalWeight;
-    dataVectorY = dataVectorY/totalWeight;
-
+    dataVectorX = (float)(dataVectorX/totalWeight);
+    dataVectorY = (float)(dataVectorY/totalWeight);
+    println("DataV X : " + dataVectorX + " DataV Y : " + dataVectorY); 
     //Gemmer punktet i vores vector
     dataVector.add(new Point(dataVectorX, dataVectorY));
   }
@@ -214,14 +239,6 @@ public class Pose {
       modelVectorX += (modelMatrixArray[i][0] * weights.get(i));
       modelVectorY += (modelMatrixArray[i][1] * weights.get(i));
     }
-
-    //for (int i = 0; i < modelMatrixArray[0].length; i++) {
-    //  weight = calculateWeight(width/2, height/2, 
-    //    (float)modelMatrixArray[0][i], (float)modelMatrixArray[1][i]);
-    //  totalWeight += weight;
-    //  modelVectorX += (modelMatrixArray[0][i] * weight);
-    //  modelVectorY += (modelMatrixArray[1][i] * weight);
-    //}
 
     modelVectorX = modelVectorX/totalWeight;
     modelVectorY = modelVectorY/totalWeight;
@@ -279,10 +296,10 @@ public class Pose {
       relevantModelPoints[i][1] = modelPoints.get(minDistanceIndex).y;
     }
     //Efter alle feature points er fundet, så kan jeg beregne confidence som de gør i formel 10
-   if(dataPoints.size() != 0){
-    confidence = totalFeaturePoints/dataPoints.size();
-  } else {
-  println("Pose.pde dataPoints.size() == 0");
-  }
+    if (dataPoints.size() != 0) {
+      confidence = totalFeaturePoints/dataPoints.size();
+    } else {
+      println("Pose.pde dataPoints.size() == 0");
+    }
   }
 }

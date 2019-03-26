@@ -1,4 +1,4 @@
-public class Corner extends Point {
+public class Corner extends Point implements Comparable {
 
   //ArrayList<Point> cluster = new ArrayList<Point>();
   //color custerColor;
@@ -29,6 +29,10 @@ public class Corner extends Point {
       ////der bruger height og width divideret med 2 for at centrere points i gui
       //this.y = (cos(radians(givenAngle)) * (givenDistance/scale))+(height/2);
       //this.x = (sin(radians(givenAngle)) * (givenDistance/scale))+(width/2);   
+  }
+  
+  int compareTo (Object o) {
+   return super.compareTo(o); 
   }
   
   //Corner(float givenDistance, float givenAngle, int scale, boolean point) {
