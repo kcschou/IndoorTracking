@@ -68,7 +68,7 @@ public class Pose {
   //Formel 6 - Jeg skal lige have fundet ud af hvordan man rigtigt blander matricer og vektorer i en beregning
   public void calculateT() {
 
-    println("Calculate T begin");
+    //println("Calculate T begin");
 
     double[][] dataV = new double[2][1];
     dataV[0][0] = dataVector.get(0).x;
@@ -82,17 +82,17 @@ public class Pose {
     Matrix mv = new Matrix(modelV);
     t = mv.minus(R.times(dv));
 
-    for (int i = 0; i < t.getArray().length; i++) {
-      for (int j = 0; j < t.getArray()[i].length; j++) {
-        println("transform " + i + " " + j+ " : " +t.get(i, j));
-      }
-      println();
-    }
+    //for (int i = 0; i < t.getArray().length; i++) {
+    //  for (int j = 0; j < t.getArray()[i].length; j++) {
+    //    println("transform " + i + " " + j+ " : " +t.get(i, j));
+    //  }
+    //  println();
+    //}
   }
 
   //Formel 9
   public void calculateR() {
-    println("CalculateR Begin");
+    //println("CalculateR Begin");
     //Vi skal først beregne U og V ud fra S
     Matrix U;
     Matrix V;
@@ -108,12 +108,12 @@ public class Pose {
 
     V = S.svd().getV();
 
-    for (int i = 0; i < V.getArray().length; i++) {
-      for (int j = 0; j < V.getArray()[i].length; j++) {
-        println("V " + i + " " + j+ " : " +V.get(i, j));
-      }
-      println();
-    }
+    //for (int i = 0; i < V.getArray().length; i++) {
+    //  for (int j = 0; j < V.getArray()[i].length; j++) {
+    //    println("V " + i + " " + j+ " : " +V.get(i, j));
+    //  }
+    //  println();
+    //}
 
 
     //Derefter har vi alle værdier som skal bruges for at beregne R
@@ -125,7 +125,7 @@ public class Pose {
       }
       println();
     }
-    println("Before calculate T");     
+    //println("Before calculate T");     
     calculateT();
   }
 
@@ -202,7 +202,7 @@ public class Pose {
 
     //Går gennem alle vores points
     for (int i = 0; i < dataPoints.size(); i++) {
-      println("matrixX: "+dataMatrixArray[i][0] + "matrixY: "+dataMatrixArray[i][1]);
+      //println("matrixX: "+dataMatrixArray[i][0] + "matrixY: "+dataMatrixArray[i][1]);
       //Inkrementere den totale vægt med den næste vægt i rækken
       float dMAx = (float)dataMatrixArray[i][0];
       float dMAy = (float)dataMatrixArray[i][1];
@@ -218,7 +218,7 @@ public class Pose {
     //Får lige demoninatoren med i formlen, det er dette vi bruger den totale vægt til
     dataVectorX = (float)(dataVectorX/totalWeight);
     dataVectorY = (float)(dataVectorY/totalWeight);
-    println("DataV X : " + dataVectorX + " DataV Y : " + dataVectorY); 
+    //println("DataV X : " + dataVectorX + " DataV Y : " + dataVectorY); 
     //Gemmer punktet i vores vector
     dataVector.add(new Point(dataVectorX, dataVectorY));
   }
