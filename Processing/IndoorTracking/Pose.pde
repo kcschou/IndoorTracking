@@ -1,8 +1,8 @@
 public class Pose {
 
 
-  //De sætter den til 50 cm i artiklen (40000 er bare for at kunne arbejde med min dumme fiktive værdier)
-  float minDistanceForCorrespondence = 40000;
+  //De sætter den til 50 cm i artiklen (400000 er bare for at kunne arbejde med min dumme fiktive værdier)
+  float minDistanceForCorrespondence = 4000000;
 
   //Ved ikke om de bliver nødvendige, men tænker at den helst skal vide hvor den sidste har været
   float previousX;
@@ -150,7 +150,6 @@ public class Pose {
     }
 
     //Laver vores arrays om til matricer
-    println("Weights size: " + weights.size() + " dataPoints size :" + dataPoints.size());
     X = new Matrix(XArray);
     Y = new Matrix(YArray);
 
@@ -213,6 +212,9 @@ public class Pose {
       dataVectorY = dataVectorY + (dMAy * weights.get(i));
     }
 
+    //Skal slettes når vi er sikre på at vi har noget rigtigt data (Forhindre NaN fejlen)
+    totalWeight = 1;
+
     //Får lige demoninatoren med i formlen, det er dette vi bruger den totale vægt til
     dataVectorX = (float)(dataVectorX/totalWeight);
     dataVectorY = (float)(dataVectorY/totalWeight);
@@ -234,11 +236,15 @@ public class Pose {
     float modelVectorY = 0;
 
     for (int i = 0; i < dataPoints.size(); i++) {
-
-      totalWeight+= weights.get(i);
-      modelVectorX += (modelMatrixArray[i][0] * weights.get(i));
-      modelVectorY += (modelMatrixArray[i][1] * weights.get(i));
+      float mMAx = (float)modelMatrixArray[i][0];
+      float mMAy = (float)modelMatrixArray[i][1];
+      totalWeight = totalWeight + weights.get(i);
+      modelVectorX = modelVectorX + (mMAx * weights.get(i));
+      modelVectorY = modelVectorY + (mMAy * weights.get(i));
     }
+
+    //Skal slettes når vi er sikre på at vi har noget rigtigt data (Forhindre NaN fejlen)
+    totalWeight = 1;
 
     modelVectorX = modelVectorX/totalWeight;
     modelVectorY = modelVectorY/totalWeight;
