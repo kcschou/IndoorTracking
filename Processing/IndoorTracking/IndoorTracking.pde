@@ -1,14 +1,17 @@
 import processing.serial.*;
 import processing.net.*;
 import java.util.*;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.NotSerializableException;
 import java.io.FileNotFoundException;
 import Jama.*;
+
+import java.io.Serializable;
 
 boolean calibrate = true;
 int modelSize = 5;
@@ -52,17 +55,17 @@ void setup()
   gui = new GUI();
 
   //Tænkte at det ville være bedre at lave tests i en seperat klasse fremfor i main (Desværre ikke Unit-tests, så fancy er jeg ikke)
-  //TestingEnvironment t = new TestingEnvironment();
+  TestingEnvironment t = new TestingEnvironment();
 
   //objectOutputStream = new ObjectOutputStream(new FileOutputStream(dataPath("LocationModel")));
   //printWriter.println("test"));
   //printWriter.flush();
   //printWriter.close();
 
-  if (new File(dataPath("LocationModel")).exists()) {
-    locationModel = (Location) readFromFile(dataPath("LocationModel"));
-    calibrate = false;
-  }
+  //if (new File(dataPath("LocationModel")).exists()) {
+  //  locationModel = (Location) readFromFile(dataPath("LocationModel"));
+  //  calibrate = false;
+  //}
 }
 
 void draw()

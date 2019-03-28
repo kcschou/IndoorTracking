@@ -1,4 +1,4 @@
-public class Point implements Comparable {
+public class Point implements Comparable, Serializable {
 
   //Et punkt har en lokation (x,y), en distance ud til det og en vinkel fra Lidar'en
   float x;

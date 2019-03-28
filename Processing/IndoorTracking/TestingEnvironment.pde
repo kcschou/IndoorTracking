@@ -1,10 +1,75 @@
 public class TestingEnvironment {
 
+  Location l;
+
   TestingEnvironment() {
 
     //Udkommenter den her hvis der ikke ønskes tests, eventuelt tilføj flere test funktioner.
     tests();
+    locatioObjectCreateTest();
   }
+
+  public void locatioObjectCreateTest() {
+
+
+    File f = dataFile(dataPath("LocationModel.ser"));
+    if (!f.isFile()) {
+      writeToFile(f.getPath(), l);
+    } else {
+
+      locationModel = (Location) readFromFile(f.getPath());
+      println("I am a file");
+      println(locationModel);
+    }
+  }
+
+  public void writeToFile(String path, Object data)
+  {
+    try
+    {
+
+      ObjectOutputStream write = new ObjectOutputStream(new FileOutputStream(path));
+      write.writeObject(data);
+      write.close();
+    }
+    catch(NotSerializableException nse)
+    {
+      println("writeToFile NotSerializableException: " + nse);
+    }
+    catch(IOException eio)
+    {
+      println("writeToFile IOExceptoin: " + eio);
+    }
+  }
+
+
+  public Object readFromFile(String path)
+  {
+    Object data = null;
+
+    try
+    {
+      FileInputStream fileIn = new FileInputStream(path);
+      ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+
+      Object obj = objectIn.readObject();
+      objectIn.close();
+      return obj;
+    }
+    catch(ClassNotFoundException cnfe)
+    {
+      println("readFromFile ClassNotFoundException: " + cnfe);
+    }
+    catch(FileNotFoundException fnfe)
+    {
+      println("readFromFile FileNotFoundException: " + fnfe);
+    }
+    catch(IOException e)
+    {
+      println("readFromFile IOExceptoin: " + e);
+    }
+    return data;
+  } 
 
   public void tests() {
 
@@ -26,7 +91,7 @@ public class TestingEnvironment {
     //corners.add(first);
     //corners.add(second);
     //corners.add(seventh);
-   // corners.add(sixth);
+    // corners.add(sixth);
     ArrayList<Point> corners2 = new ArrayList<Point>();
     corners2.add(eigth);
     corners2.add(ninth);
@@ -55,9 +120,11 @@ public class TestingEnvironment {
     Location modelLocation1 = new Location(lines1, corners2);
     Location dataLocation2 = new Location(lines2, corners2);
 
+    l = modelLocation1;
+
     //Laver en poseCorner og en poseLine ud fra lokationerne
     //PoseCorner pCorner = new PoseCorner(modelLocation1, dataLocation2);
-    PoseLine pLine = new PoseLine(modelLocation1, dataLocation2);
+    //PoseLine pLine = new PoseLine(modelLocation1, dataLocation2);
 
     //Tester om de kan beregne Data og Model Matricerne
     //pCorner.calculateDataMatrix();
@@ -76,20 +143,20 @@ public class TestingEnvironment {
     //Tester om de kan beregne Model og Data vector
     //pCorner.calculateModelVector();
     //pCorner.calculateDataVector();
-    
+
     //pCorner.calculateS();
-    
-    
-    
+
+
+
     //Matrix test = pCorner.R.uminus().transpose().times(pCorner.t);
-    
+
     //for (int i = 0; i < test.getArray().length; i++) {
     //  for (int j = 0; j < test.getArray()[i].length; j++) {
     //    println("t " + i + " " + j+ " : " +test.get(i, j));
     //  }
     //  println();
     //}
-    
+
     //println(pCorner.modelVector.get(0).y);
     //println(pLine.modelVector.get(0).x);
   }

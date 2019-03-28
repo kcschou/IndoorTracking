@@ -1,4 +1,4 @@
-public class Location {
+public class Location implements Serializable {
   ArrayList<Cluster> Lines = new ArrayList<Cluster>();
   ArrayList<Point> Corners = new ArrayList<Point>();
   
