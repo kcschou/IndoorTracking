@@ -44,12 +44,12 @@ void setup()
   gui = new GUI();
 
   //Tænkte at det ville være bedre at lave tests i en seperat klasse fremfor i main (Desværre ikke Unit-tests, så fancy er jeg ikke)
-  //TestingEnvironment t = new TestingEnvironment();
+  TestingEnvironment t = new TestingEnvironment();
 
-  printWriter = createWriter(dataPath("LocationModel.txt"));
-  printWriter.println("test");
-  printWriter.flush();
-  printWriter.close();
+  //printWriter = createWriter(dataPath("LocationModel.txt"));
+  //printWriter.println("test");
+  //printWriter.flush();
+  //printWriter.close();
 }
 
 void draw()
@@ -78,7 +78,7 @@ void draw()
         Point everyPoint = new Point(distance, angle, scale);
 
         points.add(everyPoint);
-        
+
         //println("NewScan: " + valueRead[2]);
 
         // if newScan == '1'
@@ -107,13 +107,15 @@ void draw()
           gui.update(clusterHandler.lines, clusterHandler.corners);
           if (calibrate) {
             locationModel = new Location(clusterHandler.lines, clusterHandler.corners);
-            calibrate = false;
+            if (clusterHandler.lines.size() > 5) {
+              calibrate = false;
+            }
           } else {
             locationData = new Location(clusterHandler.lines, clusterHandler.corners);
           }
-          if(locationData != null) {
-          //PoseCorner pCorner = new PoseCorner(locationModel, locationData);
-          PoseLine pLine = new PoseLine(locationModel, locationData);
+          if (locationData != null && clusterHandler.lines.size() > 3) {
+            //PoseCorner pCorner = new PoseCorner(locationModel, locationData);
+            PoseLine pLine = new PoseLine(locationModel, locationData);
           }
           update();
         }
