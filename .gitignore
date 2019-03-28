@@ -9,3 +9,6 @@ application.windows64
 application.macosx
 .vscode/*
 /Processing/IndoorTracking/data/*
+/Python/.vs/*
+/Motion Capture/tcpIpConnectTest/.vs/*
+*.pyproj
