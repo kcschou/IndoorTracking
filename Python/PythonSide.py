@@ -22,7 +22,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 print("Data:",data)
                 while data == 1:
                         print("entered the while loop")
-                        for i in lidar.iter_measurments(max_buf_meas=1000):
+                        for i in lidar.iter_measurments(max_buf_meas=10000):
                                 if i.__getitem__(3) != 0:
                                         output = str(i.__getitem__(3)) + "," + str(i.__getitem__(2)) + "," + str(i.__getitem__(0))
                                         conn.send(str.encode(output))
