@@ -1,9 +1,17 @@
 import processing.serial.*;
 import processing.net.*;
 import java.util.*;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.NotSerializableException;
+import java.io.FileNotFoundException;
 import Jama.*;
 
 boolean calibrate = true;
+int modelSize = 5;
 
 Location locationModel;
 Location locationData;
@@ -35,7 +43,7 @@ int count = 0;
 
 boolean connected = false;
 
-PrintWriter printWriter;
+ObjectOutputStream objectOutputStream;
 
 void setup()
 {
@@ -44,12 +52,17 @@ void setup()
   gui = new GUI();
 
   //Tænkte at det ville være bedre at lave tests i en seperat klasse fremfor i main (Desværre ikke Unit-tests, så fancy er jeg ikke)
-  TestingEnvironment t = new TestingEnvironment();
+  //TestingEnvironment t = new TestingEnvironment();
 
-  //printWriter = createWriter(dataPath("LocationModel.txt"));
-  //printWriter.println("test");
+  //objectOutputStream = new ObjectOutputStream(new FileOutputStream(dataPath("LocationModel")));
+  //printWriter.println("test"));
   //printWriter.flush();
   //printWriter.close();
+
+  if (new File(dataPath("LocationModel")).exists()) {
+    locationModel = (Location) readFromFile(dataPath("LocationModel"));
+    calibrate = false;
+  }
 }
 
 void draw()
@@ -106,8 +119,9 @@ void draw()
           //println("er kommer igennem clusterHandler");
           gui.update(clusterHandler.lines, clusterHandler.corners);
           if (calibrate) {
-            locationModel = new Location(clusterHandler.lines, clusterHandler.corners);
-            if (clusterHandler.lines.size() > 5) {
+            if (clusterHandler.lines.size() > modelSize) {
+              locationModel = new Location(clusterHandler.lines, clusterHandler.corners);
+              writeToFile(dataPath("LocationModel"), locationModel);
               calibrate = false;
             }
           } else {
@@ -129,8 +143,54 @@ void draw()
   count++;
 }
 
+
 public void update() {
   if (myClient.active()) {
     myClient.write(1);
   }
 }
+
+
+public static void writeToFile(String path, Object data)
+{
+  try
+  {
+    ObjectOutputStream write = new ObjectOutputStream(new FileOutputStream(path));
+      write.writeObject(data);
+      write.close();
+  }
+  catch(NotSerializableException nse)
+  {
+    println("writeToFile NotSerializableException: " + nse);
+  }
+  catch(IOException eio)
+  {
+    println("writeToFile IOExceptoin: " + eio);
+  }
+}
+
+
+public static Object readFromFile(String path)
+{
+  Object data = null;
+
+  try
+  {
+    ObjectInputStream inFile = new ObjectInputStream(new FileInputStream(path));
+    data = inFile.readObject();
+    return data;
+  }
+  catch(ClassNotFoundException cnfe)
+  {
+    println("readFromFile ClassNotFoundException: " + cnfe);
+  }
+  catch(FileNotFoundException fnfe)
+  {
+    println("readFromFile FileNotFoundException: " + fnfe);
+  }
+  catch(IOException e)
+  {
+    println("readFromFile IOExceptoin: " + e);
+  }
+  return data;
+} 
