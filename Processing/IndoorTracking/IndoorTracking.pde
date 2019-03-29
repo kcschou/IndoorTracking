@@ -91,7 +91,7 @@ void draw()
         y = cos(radians(angle)) * (distance/scale);
         x = sin(radians(angle)) * (distance/scale);
 
-        Point everyPoint = new Point(distance, angle, scale);
+        Point everyPoint = new Point(distance, angle, scale,height, width);
 
         points.add(everyPoint);
 

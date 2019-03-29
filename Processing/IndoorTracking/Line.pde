@@ -1,4 +1,4 @@
-public class Line extends Cluster {
+public static class Line extends Cluster implements Serializable {
 
   //ArrayList<Point> cluster = new ArrayList<Point>();
   

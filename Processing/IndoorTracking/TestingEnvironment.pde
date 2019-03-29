@@ -12,14 +12,14 @@ public class TestingEnvironment {
   public void locatioObjectCreateTest() {
 
 
-    File f = dataFile(dataPath("LocationModel.ser"));
+    File f = dataFile(dataPath("LocationModel"));
     if (!f.isFile()) {
       writeToFile(f.getPath(), l);
     } else {
 
       locationModel = (Location) readFromFile(f.getPath());
       println("I am a file");
-      println(locationModel);
+      println(locationModel.Corners.get(0).x);
     }
   }
 
@@ -75,16 +75,16 @@ public class TestingEnvironment {
 
 
     //Laver en masse points jeg kan teste med
-    Point first = new Point(1200, 50, scale);
-    Point second = new Point(11000, 359, scale);
-    Point third = new Point(120.21, 10, scale);
-    Point fourth = new Point(130.98, 70, scale);
-    Point fifth = new Point(140.11, 150, scale);
-    Point sixth = new Point(150.23, 50, scale);
-    Point seventh = new Point(160.1, 359, scale);
-    Point eigth = new Point(175.9, 10, scale);
-    Point ninth = new Point(180.6, 70, scale);
-    Point tenth = new Point(190.5, 150, scale);
+    Point first = new Point(1200, 50, scale, height, width);
+    Point second = new Point(11000, 359, scale, height, width);
+    Point third = new Point(120.21, 10, scale, height, width);
+    Point fourth = new Point(130.98, 70, scale, height, width);
+    Point fifth = new Point(140.11, 150, scale, height, width);
+    Point sixth = new Point(150.23, 50, scale, height, width);
+    Point seventh = new Point(160.1, 359, scale, height, width);
+    Point eigth = new Point(175.9, 10, scale, height, width);
+    Point ninth = new Point(180.6, 70, scale, height, width);
+    Point tenth = new Point(190.5, 150, scale, height, width);
 
     //Laver nogle hjørner jeg kan teste med
     ArrayList<Corner> corners = new ArrayList<Corner>();

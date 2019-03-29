@@ -1,4 +1,4 @@
-public class Point implements Comparable, Serializable {
+public static class Point implements Comparable, Serializable {
 
   //Et punkt har en lokation (x,y), en distance ud til det og en vinkel fra Lidar'en
   float x;
@@ -15,15 +15,17 @@ public class Point implements Comparable, Serializable {
 
   //Når punktet laves får det en distance, en vinkel og en scale på hvor meget distancen reduceres
   //da den måles i mm
-  Point(float givenDistance, float givenAngle, int givenScale) {
+  Point(float givenDistance, float givenAngle, int givenScale, int sHeight, int sWidth) {
     this.scale = givenScale;
     //Distance og vinkel sættes ud fra de værdier den får
     this.distance = givenDistance;
     this.angle = givenAngle;
     //Lokationen beregnes ud for trigonometriske regler.
     //der bruger height og width divideret med 2 for at centrere points i gui
-    this.y = (cos(radians(givenAngle)) * (givenDistance/scale))+(height/2);
-    this.x = (sin(radians(givenAngle)) * (givenDistance/scale))+(width/2);
+    //this.y = (cos(radians(givenAngle)) * (givenDistance/scale))+(height/2);
+    //this.x = (sin(radians(givenAngle)) * (givenDistance/scale))+(width/2);
+    this.y = (cos(radians(givenAngle)) * (givenDistance/scale))+(sHeight/2);
+    this.x = (sin(radians(givenAngle)) * (givenDistance/scale))+(sWidth/2);
   }
   
   //Indtil jeg finder en mere sexet måde, vælger jeg bare at kunne give muligheden for at lave et Point med et givent (x,y), da det gør vektor beregningerne nemmere

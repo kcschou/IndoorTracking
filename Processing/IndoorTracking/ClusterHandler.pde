@@ -109,7 +109,7 @@ public class ClusterHandler {
         }
       }
       if (cornerPlace != -1) {
-        corners.add(new Corner(givenPoints.get(cornerPlace).distance,givenPoints.get(cornerPlace).angle,givenPoints.get(cornerPlace).scale));
+        corners.add(new Corner(givenPoints.get(cornerPlace).distance,givenPoints.get(cornerPlace).angle,givenPoints.get(cornerPlace).scale, height, width));
 
         if (cornerPlace > minClusterSize) {
           ArrayList<Point> lineBeforeCorner = new ArrayList <Point> (givenPoints.subList(0, cornerPlace-1));

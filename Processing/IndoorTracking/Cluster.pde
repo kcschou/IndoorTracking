@@ -1,8 +1,10 @@
-public class Cluster implements Comparable {
+public static class Cluster implements Comparable, Serializable {
 
   ArrayList<Point> cluster = new ArrayList<Point>();
 
- // color clusterColor = color(255, 192, 203);
+  // color clusterColor = color(255, 192, 203);
+
+  static Random r;
 
   Cluster(ArrayList<Point> givenPoints) {
 
@@ -29,7 +31,9 @@ public class Cluster implements Comparable {
     if (o instanceof Cluster) {
       Cluster otherCluster = (Cluster)o;
       for (int i = 0; i <  checkedPoints; i++) {
-        int random = (int) random(this.cluster.size()-1);
+        //int random = (int) random(this.cluster.size()-1);
+        r = new Random(this.cluster.size()-1);
+        int random = r.nextInt();
         Point randomPoint = this.cluster.get(random);
         if (!otherCluster.cluster.contains(randomPoint)) {
           return -1;
