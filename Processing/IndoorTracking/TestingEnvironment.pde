@@ -12,7 +12,7 @@ public class TestingEnvironment {
   public void locatioObjectCreateTest() {
 
 
-    File f = dataFile(dataPath("LocationModel"));
+    File f = dataFile(dataPath("TestLocationModel"));
     if (!f.isFile()) {
       writeToFile(f.getPath(), l);
     } else {

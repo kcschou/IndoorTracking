@@ -46,6 +46,8 @@ int count = 0;
 
 boolean connected = false;
 
+File dataFile;
+
 ObjectOutputStream objectOutputStream;
 
 void setup()
@@ -55,17 +57,15 @@ void setup()
   gui = new GUI();
 
   //Tænkte at det ville være bedre at lave tests i en seperat klasse fremfor i main (Desværre ikke Unit-tests, så fancy er jeg ikke)
-  TestingEnvironment t = new TestingEnvironment();
+  //TestingEnvironment t = new TestingEnvironment();
 
-  //objectOutputStream = new ObjectOutputStream(new FileOutputStream(dataPath("LocationModel")));
-  //printWriter.println("test"));
-  //printWriter.flush();
-  //printWriter.close();
+  dataFile = dataFile(dataPath("LocationModel"));
 
-  //if (new File(dataPath("LocationModel")).exists()) {
-  //  locationModel = (Location) readFromFile(dataPath("LocationModel"));
-  //  calibrate = false;
-  //}
+  if (dataFile.isFile()) {
+    locationModel = (Location) readFromFile(dataFile.getPath());
+    calibrate = false;
+    println("Loaded LocationModel from file");
+  }
 }
 
 void draw()
@@ -91,7 +91,7 @@ void draw()
         y = cos(radians(angle)) * (distance/scale);
         x = sin(radians(angle)) * (distance/scale);
 
-        Point everyPoint = new Point(distance, angle, scale,height, width);
+        Point everyPoint = new Point(distance, angle, scale, height, width);
 
         points.add(everyPoint);
 
@@ -125,6 +125,8 @@ void draw()
             if (clusterHandler.lines.size() > modelSize) {
               locationModel = new Location(clusterHandler.lines, clusterHandler.corners);
               writeToFile(dataPath("LocationModel"), locationModel);
+              writeToFile(dataFile.getPath(), locationModel);
+              println("LocatoinModel saved to file");
               calibrate = false;
             }
           } else {
@@ -154,13 +156,14 @@ public void update() {
 }
 
 
-public static void writeToFile(String path, Object data)
+public void writeToFile(String path, Object data)
 {
   try
   {
+
     ObjectOutputStream write = new ObjectOutputStream(new FileOutputStream(path));
-      write.writeObject(data);
-      write.close();
+    write.writeObject(data);
+    write.close();
   }
   catch(NotSerializableException nse)
   {
@@ -173,15 +176,18 @@ public static void writeToFile(String path, Object data)
 }
 
 
-public static Object readFromFile(String path)
+public Object readFromFile(String path)
 {
   Object data = null;
 
   try
   {
-    ObjectInputStream inFile = new ObjectInputStream(new FileInputStream(path));
-    data = inFile.readObject();
-    return data;
+    FileInputStream fileIn = new FileInputStream(path);
+    ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+
+    Object obj = objectIn.readObject();
+    objectIn.close();
+    return obj;
   }
   catch(ClassNotFoundException cnfe)
   {
@@ -196,4 +202,4 @@ public static Object readFromFile(String path)
     println("readFromFile IOExceptoin: " + e);
   }
   return data;
-} 
+}
