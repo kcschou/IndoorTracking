@@ -14,12 +14,12 @@ import Jama.*;
 import java.io.Serializable;
 
 boolean calibrate = true;
-int modelSize = 5;
+int modelSize = 10;
 
-Location locationModel;
+static Location locationModel;
 Location locationData;
 
-int val = 0;
+//int val = 0;
 int port = 5204;
 
 Client myClient;
@@ -28,6 +28,7 @@ float x;
 float y;
 float distance;
 float angle;
+Boolean newScan; 
 int scale = 15;
 
 
@@ -61,6 +62,8 @@ void setup()
 
   dataFile = dataFile(dataPath("LocationModel"));
 
+  newScan = false;
+
   if (dataFile.isFile()) {
     locationModel = (Location) readFromFile(dataFile.getPath());
     calibrate = false;
@@ -88,6 +91,11 @@ void draw()
       if (valueRead.length > 1 &&!Float.isNaN(float(valueRead[0])) && !Float.isNaN(float(valueRead[1]))) {
         distance = float(valueRead[0]);
         angle = float(valueRead[1]);
+        if (valueRead.length > 2 && valueRead[2].equals("True")) {
+          newScan = true;
+        } else {
+          newScan = false;
+        }
         y = cos(radians(angle)) * (distance/scale);
         x = sin(radians(angle)) * (distance/scale);
 
@@ -98,7 +106,8 @@ void draw()
         //println("NewScan: " + valueRead[2]);
 
         // if newScan == '1'
-        if (valueRead.length > 2 && valueRead[2].equals("True")) {
+        if (newScan) {
+          println("NewScan, points.size: " + points.size());
           Collections.sort(points);
           filteredPoints = new ArrayList<Point>();
           if (filteredPoints.size()==0) {
@@ -112,27 +121,31 @@ void draw()
 
           clusterHandler.updateList(filteredPoints);
 
-          println("UnfilteredPoints size: " + points.size() + " FilteredPoints size: " + filteredPoints.size() + " Draw Point Size (Lines): " + clusterHandler.lines.size()
-            + " Draw Point Size (Corners): " + clusterHandler.corners.size());
+          //println("UnfilteredPoints size: " + points.size() + " FilteredPoints size: " + filteredPoints.size() + " Draw Point Size (Lines): " + clusterHandler.lines.size()
+          //  + " Draw Point Size (Corners): " + clusterHandler.corners.size());
 
-          if (clusterHandler.corners.size() > 0) {
-            println("Corner x: " + clusterHandler.corners.get(0).x + " Corner y: " + clusterHandler.corners.get(0).y);
-          }
+          //if (clusterHandler.corners.size() > 0) {
+          //  println("Corner x: " + clusterHandler.corners.get(0).x + " Corner y: " + clusterHandler.corners.get(0).y);
+          //}
           //er kommer igennem clusterHandler
           //println("er kommer igennem clusterHandler");
           gui.update(clusterHandler.lines, clusterHandler.corners);
           if (calibrate) {
-            if (clusterHandler.lines.size() > modelSize) {
+            if ((clusterHandler.lines.size() + clusterHandler.corners.size()) > modelSize) { // later this could be: clusterHandler.corners.size() >= modelSize
               locationModel = new Location(clusterHandler.lines, clusterHandler.corners);
               writeToFile(dataPath("LocationModel"), locationModel);
               writeToFile(dataFile.getPath(), locationModel);
               println("LocatoinModel saved to file");
+              points.clear();
+              clusterHandler = new ClusterHandler();
               calibrate = false;
             }
           } else {
             locationData = new Location(clusterHandler.lines, clusterHandler.corners);
+            points.clear(); // to ensure that the locationData is based on only the latest scan
+            println("LocationModel test data: " + locationModel.Lines.size());
           }
-          if (locationData != null && clusterHandler.lines.size() > 3) {
+          if (locationData != null && locationModel != null && clusterHandler.lines.size() > 3) {
             //PoseCorner pCorner = new PoseCorner(locationModel, locationData);
             PoseLine pLine = new PoseLine(locationModel, locationData);
           }
