@@ -99,12 +99,12 @@ public class Pose {
 
     U = S.svd().getU();
 
-    for (int i = 0; i < U.getArray().length; i++) {
-      for (int j = 0; j < U.getArray()[i].length; j++) {
-        println("U " + i + " " + j+ " : " +U.get(i, j));
-      }
-      println();
-    }
+    //for (int i = 0; i < U.getArray().length; i++) {
+    //  for (int j = 0; j < U.getArray()[i].length; j++) {
+    //    println("U " + i + " " + j+ " : " +U.get(i, j));
+    //  }
+    //  println();
+    //}
 
     V = S.svd().getV();
 
@@ -119,12 +119,12 @@ public class Pose {
     //Derefter har vi alle værdier som skal bruges for at beregne R
     R = U.transpose().times(V);
 
-    for (int i = 0; i < R.getArray().length; i++) {
-      for (int j = 0; j < R.getArray()[i].length; j++) {
-        println("R " + i + " " + j+ " : " +R.get(i, j));
-      }
-      println();
-    }
+    //for (int i = 0; i < R.getArray().length; i++) {
+    //  for (int j = 0; j < R.getArray()[i].length; j++) {
+    //    println("R " + i + " " + j+ " : " +R.get(i, j));
+    //  }
+    //  println();
+    //}
     //println("Before calculate T");     
     calculateT();
   }
@@ -144,7 +144,7 @@ public class Pose {
 
       XArray[i][0] = dataPoints.get(i).x - dataVector.get(0).x;
       XArray[i][1] = dataPoints.get(i).y - dataVector.get(0).y;
-      println("X-array : " + dataPoints.get(i).x + " " + dataVector.get(0).x);
+      //println("X-array : " + dataPoints.get(i).x + " " + dataVector.get(0).x);
       YArray[i][0] = relevantModelPoints[i][0] - modelVector.get(0).x;
       YArray[i][1] = relevantModelPoints[i][1] - modelVector.get(0).y;
     }

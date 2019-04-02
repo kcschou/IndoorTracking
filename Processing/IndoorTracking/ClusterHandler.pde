@@ -8,8 +8,8 @@ public class ClusterHandler {
   public ArrayList<Point> corners = new ArrayList<Point>(); 
   public ArrayList<Cluster> lines = new ArrayList<Cluster>(); 
 
-  float maxDistance = 30/scale;
-  float minDistance = 7/scale; 
+  float maxDistance = 300/scale;
+  float minDistance = 3/scale; 
 
   int minClusterSize = 5;
 
@@ -66,7 +66,7 @@ public class ClusterHandler {
         lastStop = i;
       }
     }
-    TestCluster();
+    //TestCluster(); //prints data about number of cluster types
   }
 
   public boolean isConnected(Point first, Point second) {
@@ -126,9 +126,9 @@ public class ClusterHandler {
   }
 
   public void TestCluster() {
-    println("Der er oprettet " + clusters.size() + " clustere.");
+    println("Der er oprettet " + clusters.size() + " clustere. ");
     for (int i = 0; i < clusters.size()-1; i++) {
-      println("Cluster " + i + "er en " + clusters.get(i).getClass().getName() + " og inholder " + clusters.get(i).cluster.size() + " points.");
+      println("Cluster " + i + " er en " + clusters.get(i).getClass().getName() + " og inholder " + clusters.get(i).cluster.size() + " points. ");
     }
   }
 }

@@ -14,12 +14,12 @@ import Jama.*;
 import java.io.Serializable;
 
 boolean calibrate = true;
-int modelSize = 5;
+int modelSize = 10;
 
-Location locationModel;
+static Location locationModel;
 Location locationData;
 
-int val = 0;
+//int val = 0;
 int port = 5204;
 
 Client myClient;
@@ -28,6 +28,7 @@ float x;
 float y;
 float distance;
 float angle;
+Boolean newScan; 
 int scale = 15;
 
 
@@ -46,6 +47,8 @@ int count = 0;
 
 boolean connected = false;
 
+File dataFile;
+
 ObjectOutputStream objectOutputStream;
 
 void setup()
@@ -55,17 +58,17 @@ void setup()
   gui = new GUI();
 
   //Tænkte at det ville være bedre at lave tests i en seperat klasse fremfor i main (Desværre ikke Unit-tests, så fancy er jeg ikke)
-  TestingEnvironment t = new TestingEnvironment();
+  //TestingEnvironment t = new TestingEnvironment();
 
-  //objectOutputStream = new ObjectOutputStream(new FileOutputStream(dataPath("LocationModel")));
-  //printWriter.println("test"));
-  //printWriter.flush();
-  //printWriter.close();
+  dataFile = dataFile(dataPath("LocationModel"));
 
-  //if (new File(dataPath("LocationModel")).exists()) {
-  //  locationModel = (Location) readFromFile(dataPath("LocationModel"));
-  //  calibrate = false;
-  //}
+  newScan = false;
+
+  if (dataFile.isFile()) {
+    locationModel = (Location) readFromFile(dataFile.getPath());
+    calibrate = false;
+    println("Loaded LocationModel from file");
+  }
 }
 
 void draw()
@@ -88,17 +91,23 @@ void draw()
       if (valueRead.length > 1 &&!Float.isNaN(float(valueRead[0])) && !Float.isNaN(float(valueRead[1]))) {
         distance = float(valueRead[0]);
         angle = float(valueRead[1]);
+        if (valueRead.length > 2 && valueRead[2].equals("True")) {
+          newScan = true;
+        } else {
+          newScan = false;
+        }
         y = cos(radians(angle)) * (distance/scale);
         x = sin(radians(angle)) * (distance/scale);
 
-        Point everyPoint = new Point(distance, angle, scale,height, width);
+        Point everyPoint = new Point(distance, angle, scale, height, width);
 
         points.add(everyPoint);
 
         //println("NewScan: " + valueRead[2]);
 
         // if newScan == '1'
-        if (valueRead.length > 2 && valueRead[2].equals("True")) {
+        if (newScan) {
+          println("NewScan, points.size: " + points.size());
           Collections.sort(points);
           filteredPoints = new ArrayList<Point>();
           if (filteredPoints.size()==0) {
@@ -112,25 +121,31 @@ void draw()
 
           clusterHandler.updateList(filteredPoints);
 
-          println("UnfilteredPoints size: " + points.size() + " FilteredPoints size: " + filteredPoints.size() + " Draw Point Size (Lines): " + clusterHandler.lines.size()
-            + " Draw Point Size (Corners): " + clusterHandler.corners.size());
+          //println("UnfilteredPoints size: " + points.size() + " FilteredPoints size: " + filteredPoints.size() + " Draw Point Size (Lines): " + clusterHandler.lines.size()
+          //  + " Draw Point Size (Corners): " + clusterHandler.corners.size());
 
-          if (clusterHandler.corners.size() > 0) {
-            println("Corner x: " + clusterHandler.corners.get(0).x + " Corner y: " + clusterHandler.corners.get(0).y);
-          }
+          //if (clusterHandler.corners.size() > 0) {
+          //  println("Corner x: " + clusterHandler.corners.get(0).x + " Corner y: " + clusterHandler.corners.get(0).y);
+          //}
           //er kommer igennem clusterHandler
           //println("er kommer igennem clusterHandler");
           gui.update(clusterHandler.lines, clusterHandler.corners);
           if (calibrate) {
-            if (clusterHandler.lines.size() > modelSize) {
+            if ((clusterHandler.lines.size() + clusterHandler.corners.size()) > modelSize) { // later this could be: clusterHandler.corners.size() >= modelSize
               locationModel = new Location(clusterHandler.lines, clusterHandler.corners);
               writeToFile(dataPath("LocationModel"), locationModel);
+              writeToFile(dataFile.getPath(), locationModel);
+              println("LocatoinModel saved to file");
+              points.clear();
+              clusterHandler = new ClusterHandler();
               calibrate = false;
             }
           } else {
             locationData = new Location(clusterHandler.lines, clusterHandler.corners);
+            points.clear(); // to ensure that the locationData is based on only the latest scan
+            println("LocationModel test data: " + locationModel.Lines.size());
           }
-          if (locationData != null && clusterHandler.lines.size() > 3) {
+          if (locationData != null && locationModel != null && clusterHandler.lines.size() > 3) {
             //PoseCorner pCorner = new PoseCorner(locationModel, locationData);
             PoseLine pLine = new PoseLine(locationModel, locationData);
           }
@@ -154,13 +169,14 @@ public void update() {
 }
 
 
-public static void writeToFile(String path, Object data)
+public void writeToFile(String path, Object data)
 {
   try
   {
+
     ObjectOutputStream write = new ObjectOutputStream(new FileOutputStream(path));
-      write.writeObject(data);
-      write.close();
+    write.writeObject(data);
+    write.close();
   }
   catch(NotSerializableException nse)
   {
@@ -173,15 +189,18 @@ public static void writeToFile(String path, Object data)
 }
 
 
-public static Object readFromFile(String path)
+public Object readFromFile(String path)
 {
   Object data = null;
 
   try
   {
-    ObjectInputStream inFile = new ObjectInputStream(new FileInputStream(path));
-    data = inFile.readObject();
-    return data;
+    FileInputStream fileIn = new FileInputStream(path);
+    ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+
+    Object obj = objectIn.readObject();
+    objectIn.close();
+    return obj;
   }
   catch(ClassNotFoundException cnfe)
   {
@@ -196,4 +215,4 @@ public static Object readFromFile(String path)
     println("readFromFile IOExceptoin: " + e);
   }
   return data;
-} 
+}
