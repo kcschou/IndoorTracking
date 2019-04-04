@@ -2,7 +2,7 @@ public class Pose {
 
 
   //De sætter den til 50 cm i artiklen (400000 er bare for at kunne arbejde med min dumme fiktive værdier)
-  float minDistanceForCorrespondence = 4000000;
+  float minDistanceForCorrespondence = 50;
 
   //Ved ikke om de bliver nødvendige, men tænker at den helst skal vide hvor den sidste har været
   float previousX;
@@ -172,7 +172,7 @@ public class Pose {
     //W = W.svd().getS();
 
     //Nu når vi har alle værdier kan vi beregne S som de gør mellem formel 7 og 8
-    S = Y.transpose().times(W.times(X));
+    S = Y.transpose().times(W).times(X);
 
 
     //for (int i = 0; i < X.getArray().length; i++) {
@@ -213,7 +213,7 @@ public class Pose {
     }
 
     //Skal slettes når vi er sikre på at vi har noget rigtigt data (Forhindre NaN fejlen)
-    totalWeight = 1;
+    //totalWeight = 1;
 
     //Får lige demoninatoren med i formlen, det er dette vi bruger den totale vægt til
     dataVectorX = (float)(dataVectorX/totalWeight);
@@ -244,7 +244,7 @@ public class Pose {
     }
 
     //Skal slettes når vi er sikre på at vi har noget rigtigt data (Forhindre NaN fejlen)
-    totalWeight = 1;
+    //totalWeight = 1;
 
     modelVectorX = modelVectorX/totalWeight;
     modelVectorY = modelVectorY/totalWeight;
