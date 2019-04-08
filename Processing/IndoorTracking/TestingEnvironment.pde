@@ -6,7 +6,7 @@ public class TestingEnvironment {
 
     //Udkommenter den her hvis der ikke ønskes tests, eventuelt tilføj flere test funktioner.
     tests();
-    locatioObjectCreateTest();
+    //locatioObjectCreateTest();
   }
 
   public void locatioObjectCreateTest() {
@@ -124,8 +124,12 @@ public class TestingEnvironment {
 
     //Laver en poseCorner og en poseLine ud fra lokationerne
     //PoseCorner pCorner = new PoseCorner(modelLocation1, dataLocation2);
-    //PoseLine pLine = new PoseLine(modelLocation1, dataLocation2);
-
+    PoseLine pLine = new PoseLine(modelLocation1, dataLocation2);
+    pLine.argmin();
+    
+    println("Minimum Rotation: " + pLine.minR);
+    println("Minimum Translation: " + "x: " + pLine.minT.x + " y: " + pLine.minT.y);
+    
     //Tester om de kan beregne Data og Model Matricerne
     //pCorner.calculateDataMatrix();
     //pCorner.calculateModelMatrix();

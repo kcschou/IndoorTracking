@@ -8,6 +8,10 @@ public class Pose {
   float previousX;
   float previousY;
 
+  float minR;
+  Point minT;
+
+
   //Den måde, så vidt jeg har forstået, at algoritmen funker er at den gå i gennem et fuldt model set (alle hjørner eller linjer), finder de punkter herfra som er tættest på data settet og udtrækker disse
   //derfor har jeg både lavet et fullModelSet, modelSet og et dataSet
   Location fullModelSet;
@@ -264,6 +268,82 @@ public class Pose {
   }
 
   public void calculateModelMatrix() {
+  }
+
+  public void argmin() {
+    int step = 1;
+    minR = (float) Double.POSITIVE_INFINITY;
+
+    float epsilon = 2;
+
+    float currentTX = (float) t.get(0, 0);
+    float currentTY = (float) t.get(1, 0);
+
+    float currentAngle = degrees(acos((float) R.get(0, 0)));
+
+    ArrayList<Float> translationValue = new ArrayList<Float>();
+
+    float minValue = (float) Double.POSITIVE_INFINITY;
+    int numberOfAngles = 20;
+
+    translationValue.add(RBTP(0, currentAngle, currentTX - epsilon, currentTY));
+    translationValue.add(RBTP(0, currentAngle, currentTX + epsilon, currentTY));
+    translationValue.add(RBTP(0, currentAngle, currentTX, currentTY - epsilon));
+    translationValue.add(RBTP(0, currentAngle, currentTX, currentTY + epsilon));
+    translationValue.add(RBTP(0, currentAngle, currentTX, currentTY));
+
+    int lowestIndex = 0;
+    for (int h = 0; h < translationValue.size()-1; h++) {
+      if (translationValue.get(h) < translationValue.get(h+1)) {
+        lowestIndex = h;
+      }
+    }
+
+    for (int j = 0; j < numberOfAngles; j++) { 
+      if (lowestIndex == 0) {
+        currentTX = currentTX - epsilon;
+      } else if (lowestIndex == 1) {
+        currentTX = currentTX + epsilon;
+      } else if (lowestIndex == 2) {
+        currentTY = currentTY - epsilon;
+      } else if (lowestIndex == 3) {
+        currentTY = currentTY + epsilon;
+      }
+
+      for (int i = 0; i < weights.size(); i += step) {
+        float value = RBTP(i, currentAngle, currentTX, currentTY);
+        if (i+step < weights.size() && value <  RBTP(i+step, currentAngle, currentTX, currentTY) && step != 1) {
+          step = step/2;
+        }
+        if (minValue > value) {
+          minR = currentAngle;
+          minValue = value;
+          minT = new Point(currentTX, currentTY);
+        }
+      }
+      currentAngle+= 360/numberOfAngles;
+      if (currentAngle > 360) {
+        currentAngle = 0;
+      }
+    }
+  }
+
+  //Rigid body Transformation - Formel 5
+  public float RBTP(int index, float givenAngle, float givenTX, float givenTY) {
+
+
+    Point rotationPoint = new Point(givenAngle*dataPoints.get(index).x, givenAngle*dataPoints.get(index).y);
+    //Vector rotationPointT = new Vector<>();
+    //rotationPointT.add(givenTX);
+    //rotationPointT.add(givenTY);
+
+    rotationPoint.x += (float) givenTX;
+    rotationPoint.y += (float) givenTY;
+
+    rotationPoint.x -= (float) relevantModelPoints[index][0];
+    rotationPoint.y -= (float) relevantModelPoints[index][1];
+    float value = weights.get(index) * pow(mag(rotationPoint.x, rotationPoint.y),2);
+    return value;
   }
 
   //Uha, så kommer den famøse ICP (Iterative Closest Point) algoritme som de går gennem i section 3.2, den skal gennemgåes før Pose beregningen (måske den skal i en anden klasse, det kan vi snakke om)

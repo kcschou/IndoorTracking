@@ -58,7 +58,7 @@ void setup()
   gui = new GUI();
 
   //Tænkte at det ville være bedre at lave tests i en seperat klasse fremfor i main (Desværre ikke Unit-tests, så fancy er jeg ikke)
-  //TestingEnvironment t = new TestingEnvironment();
+  TestingEnvironment t = new TestingEnvironment();
 
   dataFile = dataFile(dataPath("LocationModel"));
 
