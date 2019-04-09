@@ -22,6 +22,7 @@ public class ClusterHandler {
   //}
 
   public void updateList(ArrayList<Point> givenPoints) {
+    points.clear();
     points = givenPoints;
     corners.clear();
     lines.clear();

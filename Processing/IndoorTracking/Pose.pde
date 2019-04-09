@@ -271,7 +271,7 @@ public class Pose {
   }
 
   public void argmin() {
-    int step = 1;
+    int step = 8;
     minR = (float) Double.POSITIVE_INFINITY;
 
     float epsilon = 2;
@@ -293,9 +293,11 @@ public class Pose {
     translationValue.add(RBTP(0, currentAngle, currentTX, currentTY));
 
     int lowestIndex = 0;
-    for (int h = 0; h < translationValue.size()-1; h++) {
-      if (translationValue.get(h) < translationValue.get(h+1)) {
+    float lowestValue = (float) Double.POSITIVE_INFINITY;
+    for (int h = 0; h < translationValue.size(); h++) {
+      if (translationValue.get(h) < lowestValue) {
         lowestIndex = h;
+        lowestValue = translationValue.get(h);
       }
     }
 
@@ -316,6 +318,7 @@ public class Pose {
           step = step/2;
         }
         if (minValue > value) {
+          println("minValue > value");
           minR = currentAngle;
           minValue = value;
           minT = new Point(currentTX, currentTY);

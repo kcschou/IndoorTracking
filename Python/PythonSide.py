@@ -13,6 +13,8 @@ import socket
 HOST = 'localhost'
 PORT = 10002
 
+#start_time = time.time()
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
         s.listen()
@@ -24,10 +26,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         print("entered the while loop")
                         for i in lidar.iter_measurments(max_buf_meas=10000):
                                 if i.__getitem__(3) != 0:
-                                        output = str(i.__getitem__(3)) + "," + str(i.__getitem__(2)) + "," + str(i.__getitem__(0))
+                                        if time.process_time()%2 <= 0.1:
+                                                print("newScan")
+                                                newScan = True
+                                        else:
+                                                newScan = False
+                                        
+                                        output = str(i.__getitem__(3)) + "," + str(i.__getitem__(2)) + "," + str(newScan)#+ str(i.__getitem__(0))
+                                        
                                         conn.send(str.encode(output))
-                                        print("sent:"+output)
-                                        time.sleep(0.2)
+                                        #print("sent:"+output)
+                                        #time.sleep(0.2)
 
 lidar.stop()
 lidar.stop_motor()
