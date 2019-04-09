@@ -14,7 +14,7 @@ import Jama.*;
 import java.io.Serializable;
 
 boolean calibrate = true;
-int modelSize = 10;
+int modelSize = 0;
 
 static Location locationModel;
 Location locationData;
@@ -58,7 +58,7 @@ void setup()
   gui = new GUI();
 
   //Tænkte at det ville være bedre at lave tests i en seperat klasse fremfor i main (Desværre ikke Unit-tests, så fancy er jeg ikke)
-  TestingEnvironment t = new TestingEnvironment();
+  //TestingEnvironment t = new TestingEnvironment();
 
   dataFile = dataFile(dataPath("LocationModel"));
 
@@ -106,7 +106,9 @@ void draw()
         //println("NewScan: " + valueRead[2]);
 
         // if newScan == '1'
-        if (newScan) {
+        //println("pointts.size(): "+ points.size() + " newScan: " + newScan);
+        if (newScan && points.size()>100) {
+          update(0);
           println("NewScan, points.size: " + points.size());
           Collections.sort(points);
           filteredPoints = new ArrayList<Point>();
@@ -131,7 +133,7 @@ void draw()
           //println("er kommer igennem clusterHandler");
           gui.update(clusterHandler.lines, clusterHandler.corners);
           if (calibrate) {
-            if ((clusterHandler.lines.size() + clusterHandler.corners.size()) > modelSize) { // later this could be: clusterHandler.corners.size() >= modelSize
+            if (modelSize >= 2) { // later this could be: clusterHandler.corners.size() >= modelSize
               locationModel = new Location(clusterHandler.lines, clusterHandler.corners);
               writeToFile(dataPath("LocationModel"), locationModel);
               writeToFile(dataFile.getPath(), locationModel);
@@ -139,6 +141,8 @@ void draw()
               points.clear();
               clusterHandler = new ClusterHandler();
               calibrate = false;
+            } else {
+              modelSize++;
             }
           } else {
             locationData = new Location(clusterHandler.lines, clusterHandler.corners);
@@ -163,6 +167,13 @@ void draw()
               println();
             }
 
+            println("Test print of PoseLine arg min");
+
+            pLine.argmin();
+
+            println("Minimum Rotation: " + pLine.minR);
+            println("Minimum Translation: " + "x: " + pLine.minT.x + " y: " + pLine.minT.y);
+
             //Matrix test = pLine.R.uminus().transpose().times(pLine.t);
 
             //for (int i = 0; i < test.getArray().length; i++) {
@@ -171,24 +182,19 @@ void draw()
             //  }
             //  println();
             //}
-
           }
-          update();
         }
       }
-    } else {
-      update();
     }
-  } else {
-    update();
+    update(1);
   }
   count++;
 }
 
-
-public void update() {
+// the pdate function should take a 1 to get a new scan from the lidar and a 0 to have the python script wait
+public void update(int update) {
   if (myClient.active()) {
-    myClient.write(1);
+    myClient.write(update);
   }
 }
 
