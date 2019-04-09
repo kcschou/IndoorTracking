@@ -14,7 +14,8 @@ import Jama.*;
 import java.io.Serializable;
 
 boolean calibrate = true;
-int modelSize = 0;
+int modelSize = 0; // used to keep track of the number of times the model has been updated under calibration
+int modelSizeGoal = 5; // the number of times the model should have updated at the end of the calibration
 
 static Location locationModel;
 Location locationData;
@@ -133,7 +134,7 @@ void draw()
           //println("er kommer igennem clusterHandler");
           gui.update(clusterHandler.lines, clusterHandler.corners);
           if (calibrate) {
-            if (modelSize >= 2) { // later this could be: clusterHandler.corners.size() >= modelSize
+            if (modelSize >= modelSizeGoal) {
               locationModel = new Location(clusterHandler.lines, clusterHandler.corners);
               writeToFile(dataPath("LocationModel"), locationModel);
               writeToFile(dataFile.getPath(), locationModel);
