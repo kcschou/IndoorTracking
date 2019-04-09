@@ -25,7 +25,7 @@ def create_body_index(xml_string):
 async def main():
     
     """ Main function """
-    connection = await qtm.connect("10.80.11.203", 22223, 1.16)
+    connection = await qtm.connect("10.80.7.60", 22223, 1.16)
     if connection is None:
         return
 
@@ -67,25 +67,43 @@ async def main():
                 #print("backy: ", yback, "backx: ", xback)
                 
                 #udregning af robottens vinkel og position, fronts placering i forhold til back
-                newFrontX = xback - xfront #bruges som længde på modstående katete af trekant
-                newFrontY = yback - yfront
+                #newFrontX = xfront - xback #bruges som længde på modstående katete af trekant
+                #newFrontY = yfront - yback
                 #print("modstående katete: ",newFrontX)
                 #længde mellem markers 300,4 mm - længden på de to sider ligebenet trekant
                 legs = 300.4
 
-                #cos(A) = (legs^2 + legs^2 - newFrontX^2)/2*(legs*legs)
-                A = math.degrees(math.acos((legs*legs + legs*legs - newFrontX*newFrontX)/(2*legs*legs)))
-                print("angle: ",A)
-
-                absnewFrontX = abs(newFrontX)
-                absnewFrontY = abs(newFrontY)
+                absnewFrontX = abs(xback - xfront)
+                absnewFrontY = abs(yback - yfront)
 
                 #pythagoras til at beregne om det passer med længden mellem markerne
                 side_c = math.sqrt(absnewFrontX * absnewFrontX + absnewFrontY * absnewFrontY)
-                print('The length of side c is: ',side_c)
+                #print('The length of side c is: ',side_c)
+
+                 #cos(A) = (legs^2 + legs^2 - newFrontX^2)/2*(legs*legs)
+                cosA = (side_c*side_c + side_c*side_c - absnewFrontX*absnewFrontX)/(2*(side_c*side_c))
+                A = math.degrees(math.acos(cosA))
+                print("angle: ",A)
+
+                #sin(A) beregning, der er lidt forskel, men det ser ud til, det kun deviere med nogle millimeter
+                sinA = absnewFrontX/side_c
+                V = math.degrees(math.asin(sinA))
+                print("angle sin V: ", V)
 
                 #position af robottens placering i forhold til nulpunkt (målt i mm)
                 print("robot position: ", xback, ",", yback)
+
+                if xfront < xback:
+                    print("the robots front points to the left, in an angle of: ", A)
+                elif xfront > xback:
+                    print("the robots front points to the right, in an angle of: ", A)
+
+                if yfront < yback:
+                    print("the robots front points south")
+                elif yfront > yback:
+                    print("the robots front points north")
+                
+                
 
     await connection.stream_frames(components=["3d"], on_packet=on_packet)
     
