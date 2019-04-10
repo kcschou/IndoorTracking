@@ -12,6 +12,15 @@ public class Pose {
   Point minT;
 
 
+  // for use in the iterative part of ICP
+  int iterationsLines = 5; //number of iteration over the lines in the ICP
+  ArrayList<Point> ClonedModelPoints = new ArrayList<Point>();  
+  double[][] mostRelevantModelPoints;
+  ArrayList<Float> currentWeights = new ArrayList<Float>();
+  float totalWeight = 0;
+  float bestWeight = (float) Double.POSITIVE_INFINITY;
+
+
   //Den måde, så vidt jeg har forstået, at algoritmen funker er at den gå i gennem et fuldt model set (alle hjørner eller linjer), finder de punkter herfra som er tættest på data settet og udtrækker disse
   //derfor har jeg både lavet et fullModelSet, modelSet og et dataSet
   Location fullModelSet;
@@ -138,7 +147,7 @@ public class Pose {
 
     //Vi laver et dobbelt array til både X, Y og W, fra formel 8, som senere bliver lavet om til Matricer. Grunden til at jeg gør det på den måde er, at det er nemmere at fylde ting i et
     //dobbelt array og senere lave det om til en matrice end direkte lave det til en matrice med det samme.
-    //Hvis alt er gjort ordentligt så burde dataPoint.size() = weight.size() og teknisk set også = relevantModelPoints[1].length (jeg hader bare at bruge den)
+    //Hvis alt er gjort ordentligt så burde dataPoint.size() = weight.size() og teknisk set også = mostRelevantModelPoints[1].length (jeg hader bare at bruge den)
     double[][] XArray = new double[dataPoints.size()][2];
     double[][] YArray = new double[dataPoints.size()][2];
     double[][] WArray = new double[weights.size()][weights.size()];
@@ -149,8 +158,8 @@ public class Pose {
       XArray[i][0] = dataPoints.get(i).x - dataVector.get(0).x;
       XArray[i][1] = dataPoints.get(i).y - dataVector.get(0).y;
       //println("X-array : " + dataPoints.get(i).x + " " + dataVector.get(0).x);
-      YArray[i][0] = relevantModelPoints[i][0] - modelVector.get(0).x;
-      YArray[i][1] = relevantModelPoints[i][1] - modelVector.get(0).y;
+      YArray[i][0] = mostRelevantModelPoints[i][0] - modelVector.get(0).x;
+      YArray[i][1] = mostRelevantModelPoints[i][1] - modelVector.get(0).y;
     }
 
     //Laver vores arrays om til matricer
@@ -343,46 +352,62 @@ public class Pose {
     rotationPoint.x += (float) givenTX;
     rotationPoint.y += (float) givenTY;
 
-    rotationPoint.x -= (float) relevantModelPoints[index][0];
-    rotationPoint.y -= (float) relevantModelPoints[index][1];
-    float value = weights.get(index) * pow(mag(rotationPoint.x, rotationPoint.y),2);
+    rotationPoint.x -= (float) mostRelevantModelPoints[index][0];
+    rotationPoint.y -= (float) mostRelevantModelPoints[index][1];
+    float value = weights.get(index) * pow(mag(rotationPoint.x, rotationPoint.y), 2);
     return value;
   }
 
   //Uha, så kommer den famøse ICP (Iterative Closest Point) algoritme som de går gennem i section 3.2, den skal gennemgåes før Pose beregningen (måske den skal i en anden klasse, det kan vi snakke om)
   public void ICP() {
+    for (int k = 0; k < iterationsLines; k++) {
+      ClonedModelPoints = (ArrayList<Point>) modelPoints.clone();
+      totalWeight = 0;
+      currentWeights.clear();
 
-    //Vi skal have ligeså mange relevante model points som datapoints (alle data points skal mappes til ét model point kun)
-    relevantModelPoints = new double[dataPoints.size()][2];
-    //Derfor er maks antal feature point lig antallet af datapoint
-    totalFeaturePoints = dataPoints.size();
-    //Vi går i gennem alle datapoints, da alle som sagt skal mappes
-    for (int i = 0; i < dataPoints.size(); i++) {
-      //Vi vil gerne finde det punkt par med den korteste distance, så vi starter med at sige at den korteste distance er uendeligt stort.
-      float minDistance = (float) Double.POSITIVE_INFINITY;
-      //Vi skal initiere variablen (dammit), så siger bare at den er -1, den burde altid ændre sig, da der bliver nødt til at være et punkt med lavere distance end uendeligt
-      int minDistanceIndex = -1;
-      //Så går vi gennem alle punkter i vores model (husk på at det er opdelt efter hjørner og linjer og derfor ikke er uendeligt højt, cirka 2000 i artiklen)
-      for (int j = 0; j < modelPoints.size(); j++) {
-        //Så beregner vi vægten mellem data punktet og model punktet
-        float distance = calculateWeight(dataPoints.get(i).x, dataPoints.get(i).y, modelPoints.get(j).x, modelPoints.get(j).y);
-        //Hvis de er tættere på hinanden end den nuværende minDistance så gemmes den distance samt hvilket punkt som har den distance
-        if (distance < minDistance) {
-          minDistance = distance;
-          minDistanceIndex = j;
+      //Vi skal have ligeså mange relevante model points som datapoints (alle data points skal mappes til ét model point kun)
+      relevantModelPoints = new double[dataPoints.size()][2];
+      //Derfor er maks antal feature point lig antallet af datapoint
+      totalFeaturePoints = dataPoints.size();
+      //Vi går i gennem alle datapoints, da alle som sagt skal mappes
+      for (int i = 0; i < dataPoints.size(); i++) {
+        //Vi vil gerne finde det punkt par med den korteste distance, så vi starter med at sige at den korteste distance er uendeligt stort.
+        float minDistance = (float) Double.POSITIVE_INFINITY;
+        //Vi skal initiere variablen (dammit), så siger bare at den er -1, den burde altid ændre sig, da der bliver nødt til at være et punkt med lavere distance end uendeligt
+        int minDistanceIndex = -1;
+        //Så går vi gennem alle punkter i vores model (husk på at det er opdelt efter hjørner og linjer og derfor ikke er uendeligt højt, cirka 2000 i artiklen)
+        for (int j = 0; j < ClonedModelPoints.size(); j++) {
+          //Så beregner vi vægten mellem data punktet og model punktet
+          float distance = calculateWeight(dataPoints.get(i).x, dataPoints.get(i).y, ClonedModelPoints.get(j).x, ClonedModelPoints.get(j).y);
+          //Hvis de er tættere på hinanden end den nuværende minDistance så gemmes den distance samt hvilket punkt som har den distance
+          if (distance < minDistance) {
+            minDistance = distance;
+            minDistanceIndex = j;
+          }
         }
+        //I artiklen sætter de vægten lig 0 hvis den mindste distance er større end en fixed distance, så jeg laver et check på dette, og samtidigt trækker jeg 1 fra totalFeaturePoints fra vi så har et ikke
+        //sammenhørende punkt par - Jeg er ikke helt sikker på at det er det de gør, men sådan tolker jeg det
+        if (minDistance > minDistanceForCorrespondence) {
+          minDistance = 0;
+          totalFeaturePoints--;
+        }
+        //Gemmer vægten (skal bruges i formel 7 og til beregning af W)
+        currentWeights.add(minDistance);
+
+        totalWeight += minDistance;
+
+        //Og gemmer det punkt som matchede i vores relevantModelPoints array
+        relevantModelPoints[i][0] = ClonedModelPoints.get(minDistanceIndex).x;
+        relevantModelPoints[i][1] = ClonedModelPoints.get(minDistanceIndex).y;
+
+        // removing the used points from the ClonedModelPoints so only one point can match to each
+        ClonedModelPoints.remove(minDistanceIndex);
       }
-      //I artiklen sætter de vægten lig 0 hvis den mindste distance er større end en fixed distance, så jeg laver et check på dette, og samtidigt trækker jeg 1 fra totalFeaturePoints fra vi så har et ikke
-      //sammenhørende punkt par - Jeg er ikke helt sikker på at det er det de gør, men sådan tolker jeg det
-      if (minDistance > minDistanceForCorrespondence) {
-        minDistance = 0;
-        totalFeaturePoints--;
+      if (totalWeight < bestWeight) {
+        bestWeight = totalWeight;
+        weights = currentWeights;
+        mostRelevantModelPoints = relevantModelPoints;
       }
-      //Gemmer vægten (skal bruges i formel 7 og til beregning af W)
-      weights.add(minDistance);
-      //Og gemmer det punkt som matchede i vores relevantModelPoints array
-      relevantModelPoints[i][0] = modelPoints.get(minDistanceIndex).x;
-      relevantModelPoints[i][1] = modelPoints.get(minDistanceIndex).y;
     }
     //Efter alle feature points er fundet, så kan jeg beregne confidence som de gør i formel 10
     if (dataPoints.size() != 0) {

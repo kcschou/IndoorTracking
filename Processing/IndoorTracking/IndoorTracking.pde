@@ -15,7 +15,7 @@ import java.io.Serializable;
 
 boolean calibrate = true;
 int modelSize = 0; // used to keep track of the number of times the model has been updated under calibration
-int modelSizeGoal = 5; // the number of times the model should have updated at the end of the calibration
+int modelSizeGoal = 10; // the number of times the model should have updated at the end of the calibration
 
 static Location locationModel;
 Location locationData;
@@ -175,14 +175,15 @@ void draw()
             println("Minimum Rotation: " + pLine.minR);
             println("Minimum Translation: " + "x: " + pLine.minT.x + " y: " + pLine.minT.y);
 
-            //Matrix test = pLine.R.uminus().transpose().times(pLine.t);
 
-            //for (int i = 0; i < test.getArray().length; i++) {
-            //  for (int j = 0; j < test.getArray()[i].length; j++) {
-            //    println("t " + i + " " + j+ " : " +test.get(i, j));
-            //  }
-            //  println();
-            //}
+            Matrix test = pLine.R.uminus().transpose().times(pLine.t);
+            println("\nTest print of the matrix: pLine.R.uminus().transpose().times(pLine.t)");
+            for (int i = 0; i < test.getArray().length; i++) {
+              for (int j = 0; j < test.getArray()[i].length; j++) {
+                print("t " + i + " " + j+ " : " +test.get(i, j));
+              }
+              println();
+            }
           }
         }
       }
