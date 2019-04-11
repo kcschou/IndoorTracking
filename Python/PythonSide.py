@@ -27,7 +27,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         for i in lidar.iter_measurments(max_buf_meas=10000):
                                 if i.__getitem__(3) != 0:
                                         if time.process_time()%2 <= 0.1:
-                                                print("newScan")
                                                 newScan = True
                                         else:
                                                 newScan = False

@@ -4,10 +4,7 @@ public class PoseLine extends Pose {
     super(givenModelSet, givenDataSet);
     calculateModelMatrix();
     calculateDataMatrix();
-    ICP();
-    calculateModelVector();
-    calculateDataVector();
-    calculateS();
+    WPICP(dataPoints, modelPoints);
   }
 
 

@@ -4,7 +4,7 @@ public class PoseCorner extends Pose {
     super(givenModelSet, givenDataSet);
     calculateModelMatrix();
     calculateDataMatrix();
-    ICP();
+    WPICP(dataPoints, modelPoints);
     calculateModelVector();
     calculateDataVector();
     calculateS();

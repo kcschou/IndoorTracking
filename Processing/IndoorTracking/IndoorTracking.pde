@@ -168,12 +168,12 @@ void draw()
               println();
             }
 
-            println("Test print of PoseLine arg min");
+            //println("Test print of PoseLine arg min");
 
-            pLine.argmin();
+            //pLine.argmin();
 
-            println("Minimum Rotation: " + pLine.minR);
-            println("Minimum Translation: " + "x: " + pLine.minT.x + " y: " + pLine.minT.y);
+            //println("Minimum Rotation: " + pLine.minR);
+            //println("Minimum Translation: " + "x: " + pLine.minT.x + " y: " + pLine.minT.y);
 
 
             Matrix test = pLine.R.uminus().transpose().times(pLine.t);
