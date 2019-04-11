@@ -425,9 +425,6 @@ public class Pose {
         if (distance < minDistance) {
           minDistance = distance;
           minDistanceIndex = j;
-
-          println("\nminDistance: " + minDistance);
-          println("minDistanceIndex: " + minDistanceIndex + "\n");
         }
       }
       //I artiklen sætter de vægten lig 0 hvis den mindste distance er større end en fixed distance, så jeg laver et check på dette, og samtidigt trækker jeg 1 fra totalFeaturePoints fra vi så har et ikke
