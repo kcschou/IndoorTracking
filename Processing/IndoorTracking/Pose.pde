@@ -325,7 +325,7 @@ public class Pose {
           step = step/2;
         }
         if (minValue > value) {
-          println("minValue > value");
+          //println("minValue > value");
           minR = currentAngle;
           minValue = value;
           minT = new Point(currentTX, currentTY);
@@ -362,7 +362,7 @@ public class Pose {
     int maxIterations = 20;
     float goodEnoughError = 10;
 
-    println("\n Starting WPICP\n");
+    //println("\n Starting WPICP\n");
 
     for (int i = 0; i < maxIterations; i++) {
       float currentError = ICP(data, model);
@@ -373,14 +373,14 @@ public class Pose {
       Matrix currentT = calculateT();
       if (currentError < error) {
 
-        println("\n WPICP error: " + currentError + ", old error: " + error + "\n");
+        //println("\n WPICP error: " + currentError + ", old error: " + error + "\n");
 
         error = currentError;
         R = currentR;
         t = currentT;
         if (error < goodEnoughError) {          
 
-          println("\n Good enough error from WPICP: " + error + ", becaus it's less than: " + goodEnoughError + "\n");
+          //println("\n Good enough error from WPICP: " + error + ", becaus it's less than: " + goodEnoughError + "\n");
 
           break;
         }
@@ -415,7 +415,7 @@ public class Pose {
       float minDistance = (float) Double.POSITIVE_INFINITY;
       //Vi skal initiere variablen (dammit), så siger bare at den er -1, den burde altid ændre sig, da der bliver nødt til at være et punkt med lavere distance end uendeligt
       int minDistanceIndex = -1;
-      println("\nClonedModelPoints.size() " + ClonedModelPoints.size() + "\n");
+      //println("\nClonedModelPoints.size() " + ClonedModelPoints.size() + "\n");
       //Så går vi gennem alle punkter i vores model (husk på at det er opdelt efter hjørner og linjer og derfor ikke er uendeligt højt, cirka 2000 i artiklen)
       for (int j = 0; j < ClonedModelPoints.size(); j++) {
         //Så beregner vi vægten mellem data punktet og model punktet
@@ -450,9 +450,9 @@ public class Pose {
     if (dataPoints.size() != 0) {
       confidence = totalFeaturePoints/dataPoints.size();
     } else {
-      println("Pose.pde dataPoints.size() == 0");
+      //println("Pose.pde dataPoints.size() == 0");
     }
-    println("\nTrying to finde Mean Squared Error whit (1.0/(float)" + weights.size() + ") * " + totalWeight + " = " + (1.0/(float)weights.size()) * totalWeight + "\n");
+    //println("\nTrying to finde Mean Squared Error whit (1.0/(float)" + weights.size() + ") * " + totalWeight + " = " + (1.0/(float)weights.size()) * totalWeight + "\n");
     return (1.0/(float)weights.size()) * totalWeight;
   }
 }

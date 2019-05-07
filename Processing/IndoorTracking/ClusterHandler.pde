@@ -127,9 +127,9 @@ public class ClusterHandler {
   }
 
   public void TestCluster() {
-    println("Der er oprettet " + clusters.size() + " clustere. ");
+    println("Der er oprettet " + clusters.size() + " test clustere. ");
     for (int i = 0; i < clusters.size()-1; i++) {
-      println("Cluster " + i + " er en " + clusters.get(i).getClass().getName() + " og inholder " + clusters.get(i).cluster.size() + " points. ");
+      println("Test cluster " + i + " er en " + clusters.get(i).getClass().getName() + " og inholder " + clusters.get(i).cluster.size() + " points. ");
     }
   }
 }

@@ -110,7 +110,7 @@ void draw()
         //println("pointts.size(): "+ points.size() + " newScan: " + newScan);
         if (newScan && points.size()>100) {
           update(0);
-          println("NewScan, points.size: " + points.size());
+          //println("NewScan, points.size: " + points.size());
           Collections.sort(points);
           filteredPoints = new ArrayList<Point>();
           if (filteredPoints.size()==0) {
@@ -148,41 +148,41 @@ void draw()
           } else {
             locationData = new Location(clusterHandler.lines, clusterHandler.corners);
             points.clear(); // to ensure that the locationData is based on only the latest scan
-            println("LocationModel test data: " + locationModel.Lines.size());
+            //println("LocationModel test data: " + locationModel.Lines.size());
           }
           if (locationData != null && locationModel != null && clusterHandler.lines.size()>0) {
             //PoseCorner pCorner = new PoseCorner(locationModel, locationData);
             PoseLine pLine = new PoseLine(locationModel, locationData);
-            println("Test print of PoseLine transformation matrix\n");
+            //println("Test print of PoseLine transformation matrix\n");
             for (int i = 0; i < pLine.t.getArray().length; i++) {
               for (int j = 0; j < pLine.t.getArray()[i].length; j++) {
-                println("transform " + i + " " + j+ " : " +pLine.t.get(i, j));
+                //println("transform " + i + " " + j+ " : " +pLine.t.get(i, j));
               }
-              println();
+              //println();
             }
-            println("Test print of PoseLine rotation matrix\n");
+            //println("Test print of PoseLine rotation matrix\n");
             for (int i = 0; i < pLine.R.getArray().length; i++) {
               for (int j = 0; j < pLine.R.getArray()[i].length; j++) {
-                println("rotation " + i + " " + j+ " : " +pLine.R.get(i, j));
+                //println("rotation " + i + " " + j+ " : " +pLine.R.get(i, j));
               }
-              println();
+              //println();
             }
 
-            println("Test print of PoseLine arg min");
+            //println("Test print of PoseLine arg min");
 
             pLine.argmin();
 
-            println("Minimum Rotation: " + pLine.minR);
-            println("Minimum Translation: " + "x: " + pLine.minT.x + " y: " + pLine.minT.y);
+            //println("Minimum Rotation: " + pLine.minR);
+            //println("Minimum Translation: " + "x: " + pLine.minT.x + " y: " + pLine.minT.y);
 
 
             Matrix test = pLine.R.uminus().transpose().times(pLine.t);
-            println("\nTest print of the matrix: pLine.R.uminus().transpose().times(pLine.t)");
+            //println("\nTest print of the matrix: pLine.R.uminus().transpose().times(pLine.t)");
             for (int i = 0; i < test.getArray().length; i++) {
               for (int j = 0; j < test.getArray()[i].length; j++) {
-                print("t " + i + " " + j+ " : " +test.get(i, j));
+                //print("t " + i + " " + j+ " : " +test.get(i, j));
               }
-              println();
+              //println();
             }
           }
         }
