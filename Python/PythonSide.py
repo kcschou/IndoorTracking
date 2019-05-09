@@ -36,7 +36,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                         else:
                                                 newScan = False
                                         
-                                        output = str(i.__getitem__(3)) + "," + str(i.__getitem__(2)) + "," + "," + str(newScan)#+ str(i.__getitem__(0))
+                                       
+                                        output = str(i.__getitem__(3)) + "," + str(i.__getitem__(2)) + "," + str(newScan)#+ str(i.__getitem__(0))
+
                                         
                                         conn.send(str.encode(output))
 

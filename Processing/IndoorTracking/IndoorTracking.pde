@@ -124,7 +124,7 @@ void draw()
 
           clusterHandler.updateList(filteredPoints);
 
-          //println("UnfilteredPoints size: " + points.size() + " FilteredPoints size: " + filteredPoints.size() + " Draw Point Size (Lines): " + clusterHandler.lines.size()
+          println("UnfilteredPoints size: " + points.size() + " FilteredPoints size: " + filteredPoints.size()); //+ " Draw Point Size (Lines): " + clusterHandler.lines.size()
           //  + " Draw Point Size (Corners): " + clusterHandler.corners.size());
 
           //if (clusterHandler.corners.size() > 0) {
