@@ -15,7 +15,7 @@ import java.io.Serializable;
 
 boolean calibrate = true;
 int modelSize = 0; // used to keep track of the number of times the model has been updated under calibration
-int modelSizeGoal = 10; // the number of times the model should have updated at the end of the calibration
+int modelSizeGoal = 1; // the number of times the model should have updated at the end of the calibration
 
 static Location locationModel;
 Location locationData;
